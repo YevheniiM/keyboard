@@ -79,6 +79,8 @@ key events. In this case `keyboard` will be unable to report events.
 """
 from __future__ import print_function as _print_function
 
+from BE.library.keyboard.constants import STOP_CHARACTERS
+
 version = '0.13.4'
 
 import re as _re
@@ -994,7 +996,7 @@ def get_typed_strings(events, allow_backspace=True):
         elif allow_backspace and event.name == backspace_name and event.event_type == 'down':
             string = string[:-1]
         elif event.event_type == 'down':
-            if len(name) == 1:
+            if len(name) == 1 and name not in STOP_CHARACTERS:
                 if shift_pressed ^ capslock_pressed:
                     name = name.upper()
                 string = string + name
