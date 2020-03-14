@@ -1,6 +1,13 @@
 import time
 
-import keyboard
+from BE.library import keyboard
 
-time.sleep(3)
-keyboard.write('blah blah')
+
+def generate_events():
+    while True:
+        yield keyboard.read_event()
+
+
+strings = keyboard.get_typed_strings(generate_events())
+while True:
+    print(next(strings))
