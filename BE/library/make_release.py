@@ -23,7 +23,6 @@ Suggested way to organize your project for a smooth process:
 
 """
 import re
-import sys
 import os
 from subprocess import run, check_output
 import atexit

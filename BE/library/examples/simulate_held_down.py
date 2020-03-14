@@ -5,5 +5,5 @@ import time
 # "key up" event.
 for i in range(20):
     keyboard.press('a')
-    time.sleep(0.1)
+    time.sleep(0.0001)
 keyboard.release('a')
