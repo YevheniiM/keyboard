@@ -49,9 +49,9 @@ class DragButton(QtWidgets.QPushButton):
             diff = globalPos - self.__mouseMovePos
             newPos = self.mapFromGlobal(currPos + diff)
             self.move(newPos)
-
+            self.raise_()
             self.__mouseMovePos = globalPos
-        self.setCursor(QtCore.Qt.ClosedHandCursor)
+            self.setCursor(QtCore.Qt.ClosedHandCursor)
 
         super(DragButton, self).mouseMoveEvent(event)
 
