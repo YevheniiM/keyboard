@@ -2,6 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from LayoutButton import LayoutButton, LayoutButtonStyle
 from DragButton import DragButton
 from BoxLayoutFactory import BoxLayoutFactory
+from RemapMode import RemapMode
+
 import json
 
 
@@ -58,32 +60,31 @@ class Ui_MainWindow(object):
         self.controlButton.clicked.connect(self.saveRemaps)
         self.controlButtons.addWidget(self.controlButton)
 
-        self.mode = self.boxLayoutFactory.getLayout(
+        self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
             (240, 80, 890, 80),
             (0, 0, 0, 0),
-            "mode"
+            "modeWidget"
         )
 
         self.remaps = [{}]
         self.layouts = [{'mode': {
-            'type': 'Long Press',
+            'type': 'long_press',
             'value': 1
         }}]
         self.currentLayout = 0
 
-        self.radioButtons = [
-            QtWidgets.QRadioButton("Long Press"),
-            QtWidgets.QRadioButton("Multiple Press")
-        ]
-        self.radioButtons[0].toggled.connect(lambda : self.setUpMode(self.radioButtons[0]))
-        self.radioButtons[1].toggled.connect(lambda : self.setUpMode(self.radioButtons[1]))
-        self.radioButtons[0].setChecked(True)
-        [self.mode.addWidget(radioButton) for radioButton in self.radioButtons]
-
-        self.modeValue = QtWidgets.QLineEdit(self.centralWidget)
-        self.modeValue.setValidator(QtGui.QIntValidator())
-        self.controlButtons.addWidget(self.modeValue)
+        self.mode = RemapMode()
+        self.mode.longPress.toggled.connect(
+            lambda : self.mode.saveRadioState(self.layouts, self.currentLayout)
+        )
+        self.mode.multPress.toggled.connect(
+            lambda : self.mode.saveRadioState(self.layouts, self.currentLayout)
+        )
+        self.mode.value.editingFinished.connect(
+            lambda : self.mode.saveValue(self.layouts, self.currentLayout)
+        )
+        [self.modeWidget.addWidget(m) for m in self.mode.widgets]
 
         self.layoutButtons = [
             LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "Layout 1"),
@@ -96,10 +97,6 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def setUpMode(self, radioButton):
-        if radioButton.isChecked():
-            self.layouts[self.currentLayout]['mode']['type'] = radioButton.text()
 
     def saveRemaps(self):
         resultFile = {'layouts': []}
@@ -142,7 +139,7 @@ class Ui_MainWindow(object):
 
         self.remaps.append({})
         self.layouts.append({'mode': {
-            'type': 'Long Press',
+            'type': 'long_press',
             'value': 1
         }})
 
@@ -151,11 +148,8 @@ class Ui_MainWindow(object):
         self.layoutButtons[self.currentLayout].setStyleSheet(LayoutButtonStyle.DEFAULT_STYLE)
         self.layoutButtons[layoutIndex].setStyleSheet(LayoutButtonStyle.ACTIVE_LAYOUT)
         self.currentLayout = layoutIndex
+        self.mode.setModeState(self.layouts, layoutIndex)
         self.initLayout(layoutIndex)
-        if self.layouts[layoutIndex]['mode']['type'] == 'Long Press':
-            self.radioButtons[0].setChecked(True)
-        if self.layouts[layoutIndex]['mode']['type'] == 'Multiple Press':
-            self.radioButtons[1].setChecked(True)
 
 
 if __name__ == "__main__":
