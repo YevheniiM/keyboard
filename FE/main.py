@@ -1,109 +1,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from LayoutButton import LayoutButton, LayoutButtonStyle
+from DragButton import DragButton
 
 
 defaultKeyboardLayout = [
     '`:1:2:3:4:5:6:7:8:9:0:-:='.split(':'),
     'tab:q:w:e:r:t:y:u:i:o:p:[:]'.split(':'),
-    'caps lock:a:s:d:f:g:h:j:k:l:;\':enter'.split(':'),
+    'caps lock:a:s:d:f:g:h:j:k:l:;:\':enter'.split(':'),
     'shift:z:x:c:v:b:n:m:,:.:/:shift'.split(':'),
     'ctrl:fn:win:alt:space:alt:ctrl'.split(':')
 ]
 
-remaps = [{}]
-
-class LayoutButtonStyle:
-    DEFAULT_STYLE = """
-        QPushButton {
-            background-color: #BBDEFB;
-            border: none;
-        }
-        QPushButton:hover {
-            background-color: #90CAF9;
-        }
-    """
-    ACTIVE_LAYOUT = """
-        background-color: #64B5F6;
-        border: none;
-    """
-    ADD_LAYOUT = """
-        QPushButton {
-            opacity: 0;
-            font-size: 30px;
-            color: #0288D1;
-            border: none;
-        }
-        QPushButton:hover {
-            background-color: #BBDEFB;
-        }
-    """
-
-
-def widgets_at(pos):
-    widgets = []
-    widget_at = QtWidgets.qApp.widgetAt(pos)
-
-    while widget_at:
-        widgets.append(widget_at)
-
-        # Make widget invisible to further enquiries
-        widget_at.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
-        widget_at = QtWidgets.qApp.widgetAt(pos)
-
-    # Restore attribute
-    for widget in widgets:
-        widget.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents, False)
-
-    return widgets
-
-class DragButton(QtWidgets.QPushButton):
-    def __init__(self, layoutIndex, *args):
-        super().__init__(*args)
-        self.layoutIndex = layoutIndex
-        self.setCursor(QtCore.Qt.PointingHandCursor)
-
-    def mousePressEvent(self, event):
-        self.__mousePressPos = None
-        self.__mouseMovePos = None
-        if event.button() == QtCore.Qt.LeftButton:
-            self.__mousePressPos = event.globalPos()
-            self.__mouseMovePos = event.globalPos()
-        self.raise_()
-        self.setCursor(QtCore.Qt.OpenHandCursor)
-
-        super(DragButton, self).mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if event.buttons() == QtCore.Qt.LeftButton:
-            # adjust offset from clicked point to origin of widget
-            currPos = self.mapToGlobal(self.pos())
-            globalPos = event.globalPos()
-            diff = globalPos - self.__mouseMovePos
-            newPos = self.mapFromGlobal(currPos + diff)
-            self.move(newPos)
-
-            self.__mouseMovePos = globalPos
-        self.setCursor(QtCore.Qt.ClosedHandCursor)
-
-        super(DragButton, self).mouseMoveEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        self.setCursor(QtCore.Qt.OpenHandCursor)
-        if self.__mousePressPos is not None:
-            widgets = widgets_at(QtGui.QCursor.pos())
-            for widget in widgets:
-                if widget.objectName() == self.objectName():
-                    if widget.text() != self.text():
-                        remaps[self.layoutIndex][widget.text()] = self.text()
-                        widget.setText(self.text())
-                        break
-
-            moved = event.globalPos() - self.__mousePressPos 
-            if moved.manhattanLength() > 3:
-                event.ignore()
-                return
-        self.setCursor(QtCore.Qt.PointingHandCursor)
-
-        super(DragButton, self).mouseReleaseEvent(event)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -156,24 +63,20 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.remaps = [{}]
+
         self.rows = [self.row0, self.row1, self.row2, self.row3, self.row4]
         self.layouts = []
         self.currentLayout = 0
-        self.layoutButtons = [QtWidgets.QPushButton("Layout 1"), QtWidgets.QPushButton("+")]
 
-        self.layoutButtons[0].setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        self.layoutButtons[0].setStyleSheet(LayoutButtonStyle.ACTIVE_LAYOUT)
-        self.layoutButtons[0].setCursor(QtCore.Qt.PointingHandCursor)
-        self.layoutButtons[0].clicked.connect(lambda : self.switchLayout(0))
-        ui.layoutsSwitcher.addWidget(self.layoutButtons[0])
+        self.layoutButtons = [
+            LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "Layout 1"),
+            LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
+            ]
 
-        self.layoutButtons[1].setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        self.layoutButtons[1].setStyleSheet(LayoutButtonStyle.ADD_LAYOUT)
-        self.layoutButtons[1].setCursor(QtCore.Qt.PointingHandCursor)
-        self.layoutButtons[1].clicked.connect(self.addLayout)
-        ui.layoutsSwitcher.addWidget(self.layoutButtons[1])
+        [ui.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
 
-        self.init_layout(0)
+        self.initLayout(0)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -182,47 +85,39 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
 
-    def init_layout(self, layoutIndex):
+    def initLayout(self, layoutIndex):
         for n in range(len(self.rows)):
             for i in reversed(range(self.rows[n].count())): 
                 self.rows[n].itemAt(i).widget().setParent(None)
 
         for n, keyboardRow in enumerate(defaultKeyboardLayout):
-            newButton = DragButton(layoutIndex, f"row {n}")
-            newButton.setObjectName("DragButton")
-            newButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+            newButton = DragButton(layoutIndex, self.remaps, f"row {n}")
             self.rows[n].addWidget(newButton)            
             for button in keyboardRow:
-                if button in remaps[layoutIndex]:
-                    newButton = DragButton(layoutIndex, remaps[layoutIndex][button])
-                else:
-                    newButton = DragButton(layoutIndex, button)
-
-                newButton.setObjectName("DragButton")
-                newButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-                self.rows[n].addWidget(newButton)
+                self.rows[n].addWidget(DragButton(layoutIndex, self.remaps, button))
 
     def addLayout(self):
         for layoutButton in self.layoutButtons:
             self.layoutsSwitcher.removeWidget(layoutButton)
-        self.layoutButtons.insert(-1, QtWidgets.QPushButton(f"Layout {len(self.layoutButtons)}"))
 
-        self.layoutButtons[-2].setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        self.layoutButtons[-2].setStyleSheet(LayoutButtonStyle.DEFAULT_STYLE)
-        self.layoutButtons[-2].setCursor(QtCore.Qt.PointingHandCursor)
-        layoutIndex = len(self.layoutButtons) - 2
-        self.layoutButtons[-2].clicked.connect(lambda : self.switchLayout(layoutIndex))
+        layoutIndex = len(self.layoutButtons) - 1
+        self.layoutButtons.insert(-1, 
+            LayoutButton(self, LayoutButtonStyle.DEFAULT_STYLE,
+                        lambda : self.switchLayout(layoutIndex),
+                         f"Layout {len(self.layoutButtons)}")
+        )
+
         for layoutButton in self.layoutButtons:
             self.layoutsSwitcher.addWidget(layoutButton)
 
-        remaps.append({})
+        self.remaps.append({})
 
     def switchLayout(self, layoutIndex):
-        print(remaps, layoutIndex)
+        print(self.remaps, layoutIndex)
         self.layoutButtons[self.currentLayout].setStyleSheet(LayoutButtonStyle.DEFAULT_STYLE)
         self.layoutButtons[layoutIndex].setStyleSheet(LayoutButtonStyle.ACTIVE_LAYOUT)
         self.currentLayout = layoutIndex
-        self.init_layout(layoutIndex)
+        self.initLayout(layoutIndex)
 
 
 if __name__ == "__main__":
