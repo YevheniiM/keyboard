@@ -10,6 +10,6 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'r') as f:
         loaded_json = json.load(f)
         keyboardController.process_configuration_file(loaded_json)
-    keyboardController.set_layout(1)
+    keyboardController.set_layout(0)
     while True:
         continue
