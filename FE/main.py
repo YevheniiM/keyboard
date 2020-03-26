@@ -146,8 +146,17 @@ class Ui_MainWindow(object):
                 'keymap': remap,
                 'mode': self.layouts[n]['mode'],
             })
-        with open('test.json', 'w') as jf:
-            json.dump(resultFile, jf)
+        options = QtWidgets.QFileDialog.Options()
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+                                                                QtWidgets.QWidget(),
+                                                                "Save configuration file",
+                                                                "config.json",
+                                                                "JSON (*.json)",
+                                                                options=options
+                                                            )
+        if fileName != '':
+            with open(fileName, 'w') as jf:
+                json.dump(resultFile, jf)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
