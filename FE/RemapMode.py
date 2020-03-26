@@ -1,31 +1,14 @@
 from PyQt5 import QtWidgets, QtGui
+import utils as U
 
 
 class RemapMode():
     def __init__(self):
-        self.label = self._initLabel()
-        self.longPress = self._initRadioButton("Long Press")
-        self.multPress = self._initRadioButton("Multiple Press")
-        self.value = self._initValue()
+        self.label = U.initLabel("Mode Setup", (60, 15))
+        self.longPress = U.initRadioButton("Long Press")
+        self.multPress = U.initRadioButton("Multiple Press")
+        self.value = U.initLineEdit(validator=QtGui.QIntValidator)
         self.widgets = [self.label, self.longPress, self.multPress, self.value]
-
-    @staticmethod
-    def _initLabel():
-        label = QtWidgets.QLabel()
-        label.setText("Mode Setup")
-        return label
-
-    @staticmethod
-    def _initRadioButton(radioButtonName):
-        radioButton = QtWidgets.QRadioButton(radioButtonName)
-        return radioButton
-
-    @staticmethod
-    def _initValue():
-        value = QtWidgets.QLineEdit()
-        value.setValidator(QtGui.QIntValidator())
-        value.setFixedWidth(100)
-        return value
 
     def saveRadioState(self, layouts, layoutIndex):
         layouts[layoutIndex]['mode']['type'] = 'long_press' \
@@ -35,7 +18,7 @@ class RemapMode():
     def saveValue(self, layouts, layoutIndex):
         layouts[layoutIndex]['mode']['value'] = int(self.value.text())
 
-    def setModeState(self, layouts, layoutIndex):
+    def loadModeState(self, layouts, layoutIndex):
         self.value.setText(str(layouts[layoutIndex]['mode']['value']))
         self.longPress.setChecked(layouts[layoutIndex]['mode']['type'] == 'long_press')
         self.multPress.setChecked(layouts[layoutIndex]['mode']['type'] == 'multiple_press')

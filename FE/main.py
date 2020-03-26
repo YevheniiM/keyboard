@@ -3,6 +3,7 @@ from LayoutButton import LayoutButton, LayoutButtonStyle
 from DragButton import DragButton
 from BoxLayoutFactory import BoxLayoutFactory
 from RemapMode import RemapMode
+from Shorthands import Shorthands
 
 import json
 
@@ -60,19 +61,23 @@ class Ui_MainWindow(object):
         self.controlButton.clicked.connect(self.saveRemaps)
         self.controlButtons.addWidget(self.controlButton)
 
+        self.remaps = [{}]
+        self.layouts = [{
+            'mode': {
+                'type': 'long_press',
+                'value': 1
+                },
+            'key_strings' : {}
+        }]
+        self.currentLayout = 0
+
+        # mode configuration widget
         self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
             (240, 80, 890, 80),
             (0, 0, 0, 0),
             "modeWidget"
         )
-
-        self.remaps = [{}]
-        self.layouts = [{'mode': {
-            'type': 'long_press',
-            'value': 1
-        }}]
-        self.currentLayout = 0
 
         self.mode = RemapMode()
         self.mode.longPress.toggled.connect(
@@ -85,6 +90,27 @@ class Ui_MainWindow(object):
             lambda : self.mode.saveValue(self.layouts, self.currentLayout)
         )
         [self.modeWidget.addWidget(m) for m in self.mode.widgets]
+        # end mode configuration widget
+
+        # key strings configuration widget
+        self.shorthandsWidget = self.boxLayoutFactory.getLayout(
+            QtWidgets.QGridLayout,
+            (340, 80, 890, 80),
+            (0, 0, 0, 0),
+            "shorthandsWidget"
+        )
+        self.wrapper = QtWidgets.QWidget()
+        self.wrapper.setGeometry(QtCore.QRect(340, 50, 450, 80))
+        self.wrapper.setObjectName("wrapper")
+        self.scroll = QtWidgets.QScrollArea(self.centralWidget)
+        self.scroll.setGeometry(QtCore.QRect(340, 80, 450, 80))
+        self.scroll.setWidget(self.wrapper)
+        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.wrapper.setLayout(QtWidgets.QGridLayout())
+        self.shorthands = Shorthands(self.renderShorthands)
+        self.renderShorthands()
+
+        # end key strings configuration widget
 
         self.layoutButtons = [
             LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "Layout 1"),
@@ -97,6 +123,21 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def renderShorthands(self):
+        for i in reversed(range(self.wrapper.layout().count())): 
+            self.wrapper.layout().itemAt(i).widget().setParent(None)
+
+        widgets2render = list(self.shorthands.getWidgets())
+        self.wrapper.setGeometry(QtCore.QRect(340, 50, 450,
+                                30 * len(widgets2render) + 32))
+        for shorthand in widgets2render:
+            for n, widget in enumerate(shorthand[1]):
+                self.wrapper.layout().addWidget(widget, shorthand[0], n)
+        self.wrapper.layout().addWidget(self.shorthands.shorthandAdder,
+                                        len(widgets2render), 0,
+                                        len(widgets2render), 4,
+                                        QtCore.Qt.AlignCenter)
 
     def saveRemaps(self):
         resultFile = {'layouts': []}
@@ -138,17 +179,23 @@ class Ui_MainWindow(object):
             self.layoutsSwitcher.addWidget(layoutButton)
 
         self.remaps.append({})
-        self.layouts.append({'mode': {
-            'type': 'long_press',
-            'value': 1
-        }})
+        self.layouts.append({
+            'mode': {
+                'type': 'long_press',
+                'value': 1
+                },
+            'key_strings': {}
+        })
 
     def switchLayout(self, layoutIndex):
         print(self.remaps, layoutIndex)
         self.layoutButtons[self.currentLayout].setStyleSheet(LayoutButtonStyle.DEFAULT_STYLE)
         self.layoutButtons[layoutIndex].setStyleSheet(LayoutButtonStyle.ACTIVE_LAYOUT)
+        self.shorthands.saveShorthandState(self.layouts, self.currentLayout)
         self.currentLayout = layoutIndex
-        self.mode.setModeState(self.layouts, layoutIndex)
+
+        self.mode.loadModeState(self.layouts, layoutIndex)
+        self.shorthands.loadShorthandState(self.layouts, layoutIndex)
         self.initLayout(layoutIndex)
 
 
