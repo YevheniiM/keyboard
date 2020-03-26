@@ -22,7 +22,9 @@ def widgetsAt(pos):
 class DragButton(QtWidgets.QPushButton):
     def __init__(self, layoutIndex, remaps, button, *args):
         if button in remaps[layoutIndex]:
-            button = remaps[layoutIndex][button]
+            button = str(remaps[layoutIndex][button])
+        else:
+            self.defaultText = button
         super().__init__(button, *args)
         self.remaps = remaps
         self.layoutIndex = layoutIndex
@@ -60,11 +62,14 @@ class DragButton(QtWidgets.QPushButton):
         if self.__mousePressPos is not None:
             widgets = widgetsAt(QtGui.QCursor.pos())
             for widget in widgets:
-                if widget.objectName() == self.objectName():
-                    if widget.text() != self.text():
-                        self.remaps[self.layoutIndex][widget.text()] = self.text()
-                        widget.setText(self.text())
-                        break
+                if widget.objectName() == self.objectName() and widget.text() != self.text():
+                    if not widget.defaultText in self.remaps[self.layoutIndex]:
+                        self.remaps[self.layoutIndex][widget.defaultText] = []
+                    self.remaps[self.layoutIndex][widget.defaultText].append(self.text())
+                    widget.setText(str(
+                        self.remaps[self.layoutIndex][widget.defaultText]
+                    ))
+                    break
 
             moved = event.globalPos() - self.__mousePressPos 
             if moved.manhattanLength() > 3:
