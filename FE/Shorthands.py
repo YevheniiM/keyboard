@@ -2,6 +2,28 @@ from PyQt5 import QtWidgets, QtCore
 import utils as U
 
 
+class ShorthandStyle:
+    EDIT_LINE_STYLE = """
+        QLineEdit {
+            background-color: #395663;
+            border-radius: 2%;
+            padding: 3px 10px 5px 10px;
+            color: #58DDE8;
+        }
+    """
+
+    BUTTON_STYLE = """
+        QPushButton {
+            width: 80px;
+            height: 25px;
+            background-color: #1dd1a1;
+            border-radius: 2%;
+        }
+        QPushButton:hover {
+            background-color: #395663;
+        }
+    """
+
 class _Shorthand():
     def __init__(self, key='', value=''):
         self.keyLabel = U.initLabel("Shorthand:", (50, 15))
@@ -12,9 +34,14 @@ class _Shorthand():
         # || possible feature for future
         # \/
         # self.checkbox = U.initCheckbox("Use this")
+        self._setStyles()
         self.widgets = [self.keyLabel, self.key,
                         self.valueLabel, self.value,]
                         # self.checkbox]
+
+    def _setStyles(self):
+        self.key.setStyleSheet(ShorthandStyle.EDIT_LINE_STYLE)
+        self.value.setStyleSheet(ShorthandStyle.EDIT_LINE_STYLE)
 
 
 class Shorthands():
@@ -52,6 +79,7 @@ class Shorthands():
         button = QtWidgets.QPushButton("+")
         button.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         button.setCursor(QtCore.Qt.PointingHandCursor)
+        button.setStyleSheet(ShorthandStyle.BUTTON_STYLE)
         button.clicked.connect(self._addShorthand)
         return button
 

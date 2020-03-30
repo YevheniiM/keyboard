@@ -4,26 +4,26 @@ from PyQt5 import QtWidgets, QtCore
 class LayoutButtonStyle:
     DEFAULT_STYLE = """
         QPushButton {
-            background-color: #BBDEFB;
+            background-color: #1dd1a1;
             border: none;
         }
         QPushButton:hover {
-            background-color: #90CAF9;
+            background-color: #10ac84;
         }
     """
     ACTIVE_LAYOUT = """
-        background-color: #64B5F6;
+        background-color: #01a3a4;
         border: none;
     """
     ADD_LAYOUT = """
         QPushButton {
             opacity: 0;
             font-size: 30px;
-            color: #0288D1;
+            color: #01a3a4;
             border: none;
         }
         QPushButton:hover {
-            background-color: #BBDEFB;
+            background-color: #1dd1a1;
         }
     """
 

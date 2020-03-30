@@ -9,39 +9,40 @@ import json
 
 
 defaultKeyboardLayout = [
-    '`:1:2:3:4:5:6:7:8:9:0:-:='.split(':'),
-    'tab:q:w:e:r:t:y:u:i:o:p:[:]'.split(':'),
-    'caps lock:a:s:d:f:g:h:j:k:l:;:\':enter'.split(':'),
-    'shift:z:x:c:v:b:n:m:,:.:/:shift'.split(':'),
-    'ctrl:fn:win:alt:space:alt:ctrl'.split(':')
+    '`:1:2:3:4:5:6:7:8:9:0:-:=:backspace'.split(':'),
+    'tab:Q:W:E:R:T:Y:U:I:O:P:[:]'.split(':'),
+    'caps lock:A:S:D:F:G:H:J:K:L:;:\':enter'.split(':'),
+    'shift:Z:X:C:V:B:N:M:,:.:/:shift'.split(':'),
+    'ctrl:fn:win:alt:space:alt:ctrl:'.split(':')
 ]
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(900, 600)
+        MainWindow.resize(930, 630)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
+        self.centralWidget.setStyleSheet("background-color: #222f3e")
         self.centralWidget.setObjectName("centralWidget")
         self.boxLayoutFactory = BoxLayoutFactory(self.centralWidget)
 
         self.layoutsSwitcher = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (0, 0, 890, 80),
+            (0, 0, 920, 80),
             (10, 10, 0, 0),
             "layoutsSwithcer"
         )
 
         self.controlButtons = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (0, 80, 230, 80),
+            (0, 80, 230, 130),
             (10, 10, 0, 0),
             "controlButtons"
         )
 
         self.rows = [self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (0, 160 + 80 * i, 890, 80),
+            (0, 210 + 73 * i, 920, 80),
             (10, 10, 0, 0),
             f"row{i}"
         ) for i in range(5)]
@@ -51,11 +52,21 @@ class Ui_MainWindow(object):
         self.menubar.setGeometry(QtCore.QRect(0, 0, 890, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        # self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        # self.statusbar.setObjectName("statusbar")
+        # MainWindow.setStatusBar(self.statusbar)
 
         self.controlButton = QtWidgets.QPushButton("Save")
+        self.controlButton.setStyleSheet("""
+            QPushButton {
+                background-color: #54a0ff;
+                border: none;
+                border-radius: 2%;
+            }
+            QPushButton:hover {
+                background-color: #2e86de;
+            }
+        """)
         self.controlButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.controlButton.setCursor(QtCore.Qt.PointingHandCursor)
         self.controlButton.clicked.connect(self.saveRemaps)
@@ -74,8 +85,8 @@ class Ui_MainWindow(object):
         # mode configuration widget
         self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
-            (240, 80, 890, 80),
-            (0, 0, 0, 0),
+            (240, 80, 125, 140),
+            (0, -9, 0, -1),
             "modeWidget"
         )
 
@@ -93,19 +104,30 @@ class Ui_MainWindow(object):
         # end mode configuration widget
 
         # key strings configuration widget
-        self.shorthandsWidget = self.boxLayoutFactory.getLayout(
-            QtWidgets.QGridLayout,
-            (340, 80, 890, 80),
-            (0, 0, 0, 0),
-            "shorthandsWidget"
-        )
+        # self.shorthandsWidget = self.boxLayoutFactory.getLayout(
+        #     QtWidgets.QGridLayout,
+        #     (340, 80, 890, 80),
+        #     (0, 0, 0, 0),
+        #     "shorthandsWidget"
+        # )
         self.wrapper = QtWidgets.QWidget()
-        self.wrapper.setGeometry(QtCore.QRect(340, 50, 450, 80))
+        self.wrapper.setGeometry(QtCore.QRect(370, 90, 520, 121))
         self.wrapper.setObjectName("wrapper")
         self.scroll = QtWidgets.QScrollArea(self.centralWidget)
-        self.scroll.setGeometry(QtCore.QRect(340, 80, 450, 80))
+        self.scroll.setGeometry(QtCore.QRect(370, 90, 520, 121))
         self.scroll.setWidget(self.wrapper)
         self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll.setStyleSheet("""
+            QScrollArea {
+                border: none;
+                background-color: #58DDE8;
+                border-radius: 2%;
+            }
+        """)
+        self.wrapper.setStyleSheet("""
+            background-color: #58DDE8;
+            border-radius: 2%;
+        """)
         self.wrapper.setLayout(QtWidgets.QGridLayout())
         self.shorthands = Shorthands(self.renderShorthands)
         self.renderShorthands()
@@ -129,8 +151,8 @@ class Ui_MainWindow(object):
             self.wrapper.layout().itemAt(i).widget().setParent(None)
 
         widgets2render = list(self.shorthands.getWidgets())
-        self.wrapper.setGeometry(QtCore.QRect(340, 50, 450,
-                                30 * len(widgets2render) + 32))
+        self.wrapper.setGeometry(QtCore.QRect(370, 90, 450,
+                                33 * (len(widgets2render) + 1)))
         for shorthand in widgets2render:
             for n, widget in enumerate(shorthand[1]):
                 self.wrapper.layout().addWidget(widget, shorthand[0], n)
@@ -168,8 +190,8 @@ class Ui_MainWindow(object):
                 self.rows[n].itemAt(i).widget().setParent(None)
 
         for n, keyboardRow in enumerate(defaultKeyboardLayout):
-            newButton = DragButton(layoutIndex, self.remaps, f"row {n}")
-            self.rows[n].addWidget(newButton)
+            # newButton = DragButton(layoutIndex, self.remaps, f"row {n}")
+            # self.rows[n].addWidget(newButton)
             for button in keyboardRow:
                 self.rows[n].addWidget(DragButton(layoutIndex, self.remaps, button))
 
