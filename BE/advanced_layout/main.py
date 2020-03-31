@@ -1,6 +1,13 @@
-from KeyboardController import KeyboardController
+from BE.advanced_layout.KeyboardController import KeyboardController
 import json
 import sys
+import keyboard
+
+
+def generate_events():
+    while True:
+        yield keyboard.read_event()
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -11,5 +18,6 @@ if __name__ == "__main__":
         loaded_json = json.load(f)
         keyboardController.process_configuration_file(loaded_json)
     keyboardController.set_layout(0)
+    strings = keyboard.get_typed_strings(generate_events())
     while True:
-        continue
+        print(next(strings))

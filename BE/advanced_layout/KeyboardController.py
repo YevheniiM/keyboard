@@ -1,6 +1,7 @@
-from ShortcutsControll import add_shortcuts, add_abbreviations, remove_shortcuts_and_abbreviations, \
-    add_control_shortcut, add_access_with_hot_key
-from RemapController import add_remap_buttons
+from BE.advanced_layout.ShortcutsControll import (
+    add_shortcuts, add_abbreviations, remove_shortcuts_and_abbreviations,
+    add_control_shortcut, add_access_with_hot_key)
+from BE.advanced_layout.RemapController import add_remap_buttons
 
 
 class KeyboardController:
@@ -27,7 +28,8 @@ class KeyboardController:
         self.last_layout = index
         self.__install_keyboard_configuration()
 
-    def __clear_keyboard_configuration(self):
+    @staticmethod
+    def __clear_keyboard_configuration():
         remove_shortcuts_and_abbreviations()
 
     def __install_keyboard_configuration(self):
