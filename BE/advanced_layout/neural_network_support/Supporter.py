@@ -44,8 +44,20 @@ class Supporter:
         corrected_sentence = send_to_network(' '.join(words))
         corrected_words = corrected_sentence.split(' ')
 
+        assert len(corrected_words) == len(words)
+
+        to_correct = []
+        for i in range(len(corrected_words)):
+            if corrected_words[i] != words[i]:
+                to_correct.append(corrected_words[i])
+
         # ЗЕНИК, ТУТ ТВОЯ ФУНКЦІЯ З ВІКОНЦЕМ
-        to_correct = choose_what_correct(corrected_words)
+        chosen = choose_what_correct(to_correct)
+
+        chosen_real_indexes = []
+        for i in chosen:
+            chosen_real_indexes.append(corrected_words.index(to_correct[i]))
+
         final = ''
 
         for i in range(len(words_with_punct)):
@@ -55,7 +67,7 @@ class Supporter:
             else:
                 word_index = words.index(words_with_punct[i])
 
-                if word_index in to_correct:
+                if word_index in chosen_real_indexes:
                     final += whitespace + corrected_words[word_index]
                 else:
                     final += whitespace + words[word_index]
@@ -65,7 +77,7 @@ class Supporter:
         print(final)
 
     def _replace_with_final(self, final):
-        for i in self.current_string:
+        for _ in self.current_string:
             keyboard.send('backspace')
             time.sleep(0.01)
         for i in final:
