@@ -699,8 +699,8 @@ def add_hotkey(hotkey, callback, args=(), suppress=False, timeout=1, trigger_on_
         # KEY_UP events go through as long as that's not what we are listening
         # for.
         handler = lambda e: (
-                                        event_type == KEY_DOWN and e.event_type == KEY_UP and e.scan_code in _logically_pressed_keys) or (
-                                        event_type == e.event_type and callback())
+                                    event_type == KEY_DOWN and e.event_type == KEY_UP and e.scan_code in _logically_pressed_keys) or (
+                                    event_type == e.event_type and callback())
         remove_step = _add_hotkey_step(handler, steps[0], suppress)
 
         def remove_():
@@ -1086,6 +1086,49 @@ def get_typed_strings(events, allow_backspace=True):
                 yield string
                 string = ''
     yield string
+
+
+def get_typed_characters(events, allow_backspace=True):
+    """
+    Given a sequence of events, tries to deduce what strings were typed.
+    Strings are separated when a non-textual key is pressed (such as tab or
+    enter). Characters are converted to uppercase according to shift and
+    capslock status. If `allow_backspace` is True, backspaces remove the last
+    character typed.
+
+    This function is a generator, so you can pass an infinite stream of events
+    and convert them to strings in real time.
+
+    Note this functions is merely an heuristic. Windows for example keeps per-
+    process keyboard state such as keyboard layout, and this information is not
+    available for our hooks.
+
+        get_type_strings(record()) #-> ['This is what', 'I recorded', '']
+    """
+    backspace_name = 'delete' if _platform.system() == 'Darwin' else 'backspace'
+
+    shift_pressed = False
+    capslock_pressed = False
+
+    for event in events:
+        name = event.name
+
+        # Space is the only key that we _parse_hotkey to the spelled out name
+        # because of legibility. Now we have to undo that.
+        if event.name == 'space':
+            name = ' '
+
+        if 'shift' in event.name:
+            shift_pressed = event.event_type == 'down'
+        elif event.name == 'caps lock' and event.event_type == 'down':
+            capslock_pressed = not capslock_pressed
+        elif event.event_type == 'down' and len(name) == 1:
+            if shift_pressed ^ capslock_pressed:
+                name = name.upper()
+            if event.name == backspace_name:
+                continue
+            else:
+                yield name
 
 
 _recording = None

@@ -1,4 +1,4 @@
-import keyboard
+from BE.library import keyboard
 
 
 def add_shortcuts(shortcuts):
