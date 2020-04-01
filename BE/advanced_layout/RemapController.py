@@ -1,5 +1,5 @@
-import keyboard
-from KeyButton import KeyButton
+from BE.advanced_layout.KeyButton import KeyButton
+from BE.library import keyboard
 
 
 def hooked(e):

@@ -1,6 +1,8 @@
-from KeyboardController import KeyboardController
+from BE.advanced_layout.KeyboardController import KeyboardController
 import json
 import sys
+
+from BE.advanced_layout.neural_network_support.Supporter import Supporter
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -11,5 +13,6 @@ if __name__ == "__main__":
         loaded_json = json.load(f)
         keyboardController.process_configuration_file(loaded_json)
     keyboardController.set_layout(0)
-    while True:
-        continue
+
+    supporter = Supporter()
+    supporter.start_listen()
