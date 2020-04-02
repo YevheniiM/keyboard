@@ -4,9 +4,8 @@ import utils as U
 
 REMAP_MODE_LABEL_STYLE = """
     QLabel {
-        background-color: #58DDE8;
+        color: #F7B500;
         border: none;
-        border-radius: 2%;
         padding: 3px 5px 4px 30px;
         max-width: 100px;
         max-height: 17px;
@@ -39,7 +38,7 @@ REMAP_MODE_LINE_STYLE = """
 
 class RemapMode():
     def __init__(self):
-        self.label = U.initLabel("Mode Setup", (60, 15))
+        self.label = U.initLabel("KEYBOARD SETTINGS", (60, 15))
         self.longPress = U.initRadioButton("Long Press")
         self.multPress = U.initRadioButton("Multiple Press")
         self.value = U.initLineEdit(validator=QtGui.QIntValidator)

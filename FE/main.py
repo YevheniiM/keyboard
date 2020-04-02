@@ -1,9 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 from LayoutButton import LayoutButton, LayoutButtonStyle
 from DragButton import DragButton
 from BoxLayoutFactory import BoxLayoutFactory
 from RemapMode import RemapMode
 from Shorthands import Shorthands
+from TestTextBox import TestTextBox
 
 import json
 
@@ -20,9 +22,9 @@ defaultKeyboardLayout = [
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(930, 630)
+        MainWindow.resize(930, 650)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
-        self.centralWidget.setStyleSheet("background-color: #222f3e")
+        self.centralWidget.setStyleSheet("background-color: #232F3F")
         self.centralWidget.setObjectName("centralWidget")
         self.boxLayoutFactory = BoxLayoutFactory(self.centralWidget)
 
@@ -42,7 +44,7 @@ class Ui_MainWindow(object):
 
         self.rows = [self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (0, 210 + 73 * i, 920, 80),
+            (0, 280 + 73 * i, 920, 80),
             (10, 10, 0, 0),
             f"row{i}"
         ) for i in range(5)]
@@ -56,21 +58,23 @@ class Ui_MainWindow(object):
         # self.statusbar.setObjectName("statusbar")
         # MainWindow.setStatusBar(self.statusbar)
 
-        self.controlButton = QtWidgets.QPushButton("Save")
-        self.controlButton.setStyleSheet("""
-            QPushButton {
-                background-color: #54a0ff;
-                border: none;
-                border-radius: 2%;
-            }
-            QPushButton:hover {
-                background-color: #2e86de;
-            }
-        """)
-        self.controlButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        self.controlButton.setCursor(QtCore.Qt.PointingHandCursor)
-        self.controlButton.clicked.connect(self.saveRemaps)
-        self.controlButtons.addWidget(self.controlButton)
+        # ===== SAVE button =====
+        # self.controlButton = QtWidgets.QPushButton("Save")
+        # self.controlButton.setStyleSheet("""
+        #     QPushButton {
+        #         background-color: #54a0ff;
+        #         border: none;
+        #         border-radius: 2%;
+        #     }
+        #     QPushButton:hover {
+        #         background-color: #2e86de;
+        #     }
+        # """)
+        # self.controlButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        # self.controlButton.setCursor(QtCore.Qt.PointingHandCursor)
+        # self.controlButton.clicked.connect(self.saveRemaps)
+        # self.controlButtons.addWidget(self.controlButton)
+        # ===== SAVE button =====
 
         self.remaps = [{}]
         self.layouts = [{
@@ -82,10 +86,10 @@ class Ui_MainWindow(object):
         }]
         self.currentLayout = 0
 
-        # mode configuration widget
+        # ====== MODE configuration widget =====
         self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
-            (240, 80, 125, 140),
+            (10, 80, 125, 140),
             (0, -9, 0, -1),
             "modeWidget"
         )
@@ -101,7 +105,7 @@ class Ui_MainWindow(object):
             lambda : self.mode.saveValue(self.layouts, self.currentLayout)
         )
         [self.modeWidget.addWidget(m) for m in self.mode.widgets]
-        # end mode configuration widget
+        # ====== MODE configuration widget ======
 
         # key strings configuration widget
         # self.shorthandsWidget = self.boxLayoutFactory.getLayout(
@@ -131,8 +135,19 @@ class Ui_MainWindow(object):
         self.wrapper.setLayout(QtWidgets.QGridLayout())
         self.shorthands = Shorthands(self.renderShorthands)
         self.renderShorthands()
-
         # end key strings configuration widget
+
+        # test text box start
+        self.textBoxWidget = self.boxLayoutFactory.getLayout(
+            QtWidgets.QHBoxLayout,
+            (10, 210, 910, 80),
+            (0, -9, 0, -1),
+            "textBoxWidget"
+        )
+        # self.testTextBox = TestTextBox()
+        # [self.textBoxWidget.addWidget(widget) for widget in self.testTextBox.widgets]
+        self.textBoxWidget.addWidget(TestTextBox())
+        # test text box end
 
         self.layoutButtons = [
             LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "Layout 1"),

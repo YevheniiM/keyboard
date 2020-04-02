@@ -129,14 +129,16 @@ class DragButton(QtWidgets.QPushButton):
                 if widget.objectName() == self.objectName() and widget.text() != self.text():
                     if not widget.defaultText in self.remaps[self.layoutIndex]:
                         self.remaps[self.layoutIndex][widget.defaultText] = [widget.defaultText]
-                    if not self.text() in self.remaps[self.layoutIndex][widget.defaultText]:
+                    if not self.text() in self.remaps[self.layoutIndex][widget.defaultText]\
+                        and len(self.remaps[self.layoutIndex][widget.defaultText]) < 3:
                         self.remaps[self.layoutIndex][widget.defaultText].append(self.text())
-                    print(self.remaps[self.layoutIndex][widget.defaultText])
-                    widget.setText('/'.join(
-                        self.remaps[self.layoutIndex][widget.defaultText]
-                    ))
-                    self.setStyleSheet(DragButtonStyle.REMAPPED_SOURCE_STYLE)
-                    widget.setStyleSheet(DragButtonStyle.REMAPPED_TARGET_STYLE)
+                        widget.setText('/'.join(
+                            self.remaps[self.layoutIndex][widget.defaultText]
+                        ))
+                        self.setStyleSheet(DragButtonStyle.REMAPPED_SOURCE_STYLE)
+                        widget.setStyleSheet(DragButtonStyle.REMAPPED_TARGET_STYLE)
+                    else:
+                        self.setStyleSheet(self.styleSheet())
                     break
 
             moved = event.globalPos() - self.__mousePressPos 
@@ -144,6 +146,6 @@ class DragButton(QtWidgets.QPushButton):
                 event.ignore()
                 return
         self.setCursor(QtCore.Qt.PointingHandCursor)
-        self.setStyleSheet(DragButtonStyle.DEFAULT_STYLE)
+        # self.setStyleSheet(DragButtonStyle.DEFAULT_STYLE)
 
         super(DragButton, self).mouseReleaseEvent(event)
