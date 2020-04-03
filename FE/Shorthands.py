@@ -48,12 +48,15 @@ class ShorthandStyle:
     """
 
 
-LABEL_FONT = QtGui.QFont("Arial", 10, weight=450)
+LABEL_FONT = QtGui.QFont("Arial", 9, weight=400)
 LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
+
 TIP_LABEL_FONT = QtGui.QFont("Arial", 10, weight=400)
 TIP_LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
+
 INPUT_LINE_FONT = QtGui.QFont('consolas', 10, weight=420)
 INPUT_LINE_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
+
 BUTTON_FONT = QtGui.QFont("Arial", 10, weight=450)
 BUTTON_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
 

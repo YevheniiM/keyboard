@@ -15,8 +15,8 @@ REMAP_MODE_LABEL_STYLE = """
 
 RADIO_BUTTON_STYLE = """
     QRadioButton {
-        padding: 5px 14px;
         border: none;
+        padding-left: 3px;
         border-radius: 2%;
         margin-right: 5px;
         color: #424E59;
@@ -32,11 +32,11 @@ REMAP_MODE_LINE_STYLE = """
         border-radius: 4px;
         padding: 4px 10px 6px 10px;
         color: white;
-        margin-left: 15px;
+        margin-left: 3px;
     }
 """
 
-LABEL_FONT = QtGui.QFont("Arial", 10, weight=450)
+LABEL_FONT = QtGui.QFont("Arial", 9, weight=400)
 LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
 
 RADIO_BUTTON_FONT = QtGui.QFont("Arial", 10, weight=400)

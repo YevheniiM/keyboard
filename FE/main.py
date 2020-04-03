@@ -22,7 +22,9 @@ defaultKeyboardLayout = [
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(950, 800)
+        self.width = 1050
+        self.height = 850
+        MainWindow.resize(self.width, self.height)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setStyleSheet("""
             background-color: #232F3F;
@@ -45,30 +47,35 @@ class Ui_MainWindow(object):
         # ====== LAYOUT SWITCHER ======
         self.layoutsSwitcher = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (0, 0, 920, 80),
+            (12, 0, self.width - 50, 80),
             (20, 20, 0, 0),
             "layoutsSwithcer"
         )
+        self.layoutAdderWidget = self.boxLayoutFactory.getLayout(
+            QtWidgets.QHBoxLayout,
+            (self.width - 91, 10, 70, 80),
+            (0, 0, 0, 0),
+            "layoutAdder"
+        )
         self.layoutsSwitcher.setAlignment(QtCore.Qt.AlignLeft)
         self.layoutsSwitcher.setSpacing(25)
-        self.layoutButtons = [
-            LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "LAYOUT 1"),
-            LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
-            ]
+        self.layoutButtons = [LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "LAYOUT 1")]
+        self.layoutAdder = LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
 
         [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
+        self.layoutAdderWidget.addWidget(self.layoutAdder)
         # ====== LAYOUT SWITCHER ======
 
         self.rows = [self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (0, 410 + 73 * i, 920, 80),
-            (20, 10, 0, 0),
+            ((self.width - 920) // 2, 410 + 73 * i, 920, 80),
+            (0, 10, 0, 0),
             f"row{i}"
         ) for i in range(5)]
 
         MainWindow.setCentralWidget(self.centralWidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 890, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, self.width - 60, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         # self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -78,7 +85,7 @@ class Ui_MainWindow(object):
         # ====== MODE configuration widget =====
         self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
-            (10, 100, 200, 140),
+            (20, 120, 200, 140),
             (10, 10, 0, -1),
             "modeWidget"
         )
@@ -99,7 +106,7 @@ class Ui_MainWindow(object):
         # ====== SHORTHANDS configuration =====
         self.shorthandsManagerWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QGridLayout,
-            (370, 100, 480, 100),
+            (390, 120, 480, 100),
             (10, 10, 0, -1),
             "shorthandsManagerWidget"
         )
@@ -111,10 +118,10 @@ class Ui_MainWindow(object):
         # )
 
         self.wrapper = QtWidgets.QWidget()
-        self.wrapper.setGeometry(QtCore.QRect(370, 200, 450, 120))
+        self.wrapper.setGeometry(QtCore.QRect(390, 220, 450, 120))
         self.wrapper.setObjectName("wrapper")
         self.scroll = QtWidgets.QScrollArea(self.centralWidget)
-        self.scroll.setGeometry(QtCore.QRect(370, 200, 450, 130))
+        self.scroll.setGeometry(QtCore.QRect(390, 220, 450, 130))
         self.scroll.setWidget(self.wrapper)
         self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scroll.setStyleSheet("""
@@ -122,9 +129,6 @@ class Ui_MainWindow(object):
                 border: none;
             }
         """)
-        # self.wrapper.setStyleSheet("""
-        #     border-radius: 2%;
-        # """)
         self.wrapper.setLayout(QtWidgets.QGridLayout())
 
         self.shorthands = Shorthands(self.renderShorthandsList)
@@ -135,19 +139,17 @@ class Ui_MainWindow(object):
         # ====== TEST TEXT box =====
         self.textBoxWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (20, 340, 900, 80),
+            ((self.width - 900) // 2, 340, 900, 80),
             (0, 0, 0, 0),
             "textBoxWidget"
         )
-        # self.testTextBox = TestTextBox()
-        # [self.textBoxWidget.addWidget(widget) for widget in self.testTextBox.widgets]
         self.textBoxWidget.addWidget(TestTextBox())
         # ====== TEST TEXT box =====
 
         # ===== SAVE button =====
         self.controlButtons = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (800, 735, 125, 35),
+            (self.width - 164, self.height - 75, 125, 35),
             (0, 0, 0, 0),
             "controlButtons"
         )
@@ -197,9 +199,9 @@ class Ui_MainWindow(object):
 
         shorthands = list(self.shorthands.getShorthandsList())
         if len(shorthands) == 1:
-            self.wrapper.setGeometry(QtCore.QRect(350, 200, 450, 30))
+            self.wrapper.setGeometry(QtCore.QRect(390, 220, 450, 30))
         else:
-            self.wrapper.setGeometry(QtCore.QRect(350, 200, 450,
+            self.wrapper.setGeometry(QtCore.QRect(390, 220, 450,
                                     20 * len(shorthands)))
         for shorthand in shorthands:
             for n, widget in enumerate(shorthand[1]):
@@ -241,11 +243,11 @@ class Ui_MainWindow(object):
         for layoutButton in self.layoutButtons:
             self.layoutsSwitcher.removeWidget(layoutButton)
 
-        layoutIndex = len(self.layoutButtons) - 1
-        self.layoutButtons.insert(-1, 
+        layoutIndex = len(self.layoutButtons)
+        self.layoutButtons.append(
             LayoutButton(self, LayoutButtonStyle.DEFAULT_STYLE,
                         lambda : self.switchLayout(layoutIndex),
-                         f"LAYOUT {len(self.layoutButtons)}")
+                         f"LAYOUT {layoutIndex + 1}")
         )
 
         for layoutButton in self.layoutButtons:
@@ -259,8 +261,8 @@ class Ui_MainWindow(object):
                 },
             'key_strings': {}
         })
-        if len(self.layoutButtons) == 5:
-            self.layoutButtons[-1].setEnabled(False)
+        if len(self.layoutButtons) == 3:
+            self.layoutAdder.setEnabled(False)
 
     def switchLayout(self, layoutIndex):
         print(self.remaps, layoutIndex)

@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 
 class LayoutButtonStyle:
@@ -33,15 +33,19 @@ class LayoutButtonStyle:
         }
     """
 
+LABEL_FONT = QtGui.QFont("Arial", 10, weight=450)
+LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
+
 
 class LayoutButton(QtWidgets.QPushButton):
     def __init__(self, ui, layoutStyle, clickConection, *args):
         super().__init__(*args)
         self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.setStyleSheet(layoutStyle)
+        self.setFont(LABEL_FONT)
         if layoutStyle == LayoutButtonStyle.ADD_LAYOUT:
             self.setFixedSize(35, 35)
         else:
-            self.setFixedWidth(200)
+            self.setFixedWidth(250)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self.clicked.connect(clickConection)

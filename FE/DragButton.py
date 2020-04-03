@@ -48,6 +48,7 @@ class DragButtonStyle:
             background: rgba(56, 93, 122, 0.6);
             color: white;
             margin: 7px 1px;
+            font-weight: 500;
         }
     """
     REMAPPED_SOURCE_STYLE = """
@@ -55,7 +56,7 @@ class DragButtonStyle:
             border: 2px groove #4F5A61;
             border-radius: 10px;
             background: rgba(85, 107, 122, 0.6);
-            color: white;
+            color: #676767;
             margin: 7px 1px;
         }
     """
@@ -89,14 +90,17 @@ class DragButton(QtWidgets.QPushButton):
         self.setObjectName("DragButton")
         self.setStyleSheet(DragButtonStyle.DEFAULT_STYLE)
         if button in string.ascii_uppercase:
-            self.setFont(QtGui.QFont("Arial", 10))
+            font = QtGui.QFont("Arial", 9)
+            font.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
+            self.setFont(font)
         if button == "":
             self.setStyleSheet("background: rgba(0, 0, 0, 0.0);")
         if button in specialButtonSizes:
             self.setFixedSize(int(70) * specialButtonSizes[button], 70)
         if remapped:
             self.setStyleSheet(DragButtonStyle.REMAPPED_TARGET_STYLE)
-        
+            # self.setFont(QtGui.QFont("Arial", 10, weight=500))
+
         remapSources = []
         for x in remaps[layoutIndex].items():
             remapSources += x[1]
