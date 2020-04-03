@@ -6,6 +6,7 @@ from BoxLayoutFactory import BoxLayoutFactory
 from RemapMode import RemapMode
 from Shorthands import Shorthands
 from TestTextBox import TestTextBox
+from AIHelper import AIHelper, TextStyle
 
 import json
 
@@ -21,7 +22,10 @@ defaultKeyboardLayout = [
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("KeyAccess")
+        MainWindow.setWindowTitle("KeyAccess")
+        MainWindow.setWindowIconText("KeyAccess")
+        MainWindow.setWindowIcon(QtGui.QIcon("resources/letter.svg"))
         self.width = 1050
         self.height = 850
         MainWindow.resize(self.width, self.height)
@@ -59,7 +63,7 @@ class Ui_MainWindow(object):
         )
         self.layoutsSwitcher.setAlignment(QtCore.Qt.AlignLeft)
         self.layoutsSwitcher.setSpacing(25)
-        self.layoutButtons = [LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "LAYOUT 1")]
+        self.layoutButtons = [LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "EVERYDAY LAYOUT")]
         self.layoutAdder = LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
 
         [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
@@ -85,7 +89,7 @@ class Ui_MainWindow(object):
         # ====== MODE configuration widget =====
         self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
-            (20, 120, 200, 140),
+            (20, 110, 200, 140),
             (10, 10, 0, -1),
             "modeWidget"
         )
@@ -103,10 +107,46 @@ class Ui_MainWindow(object):
         [self.modeWidget.addWidget(m) for m in self.mode.widgets]
         # ====== MODE configuration widget ======
 
+        # ====== AI HELPER =====
+        self.aiWidget = self.boxLayoutFactory.getLayout(
+            QtWidgets.QVBoxLayout,
+            (220, 108, 200, 105),
+            (10, 10, 0, -1),
+            "aiWidget"
+        )
+
+        self.aiHelper = AIHelper()
+        # self.aiHelper.on.toggled.connect(
+        #     lambda : self.aiHelper.saveRadioState(self.layouts, self.currentLayout)
+        # )
+        # self.aiHelper.off.toggled.connect(
+        #     lambda : self.aiHelper.saveRadioState(self.layouts, self.currentLayout)
+        # )
+        [self.aiWidget.addWidget(m) for m in self.aiHelper.widgets]
+        # ====== AI HELPER ======
+
+        # ====== TEXT STYLE =====
+        self.textStyleWidget = self.boxLayoutFactory.getLayout(
+            QtWidgets.QVBoxLayout,
+            (220, 210, 200, 100),
+            (10, 10, 0, -1),
+            "textStyleWidget"
+        )
+
+        self.textStyle = TextStyle()
+        # self.aiHelper.on.toggled.connect(
+        #     lambda : self.aiHelper.saveRadioState(self.layouts, self.currentLayout)
+        # )
+        # self.aiHelper.off.toggled.connect(
+        #     lambda : self.aiHelper.saveRadioState(self.layouts, self.currentLayout)
+        # )
+        [self.textStyleWidget.addWidget(m) for m in self.textStyle.widgets]
+        # ====== TEXT STYLE ======
+
         # ====== SHORTHANDS configuration =====
         self.shorthandsManagerWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QGridLayout,
-            (390, 120, 480, 100),
+            (390, 113, 480, 100),
             (10, 10, 0, -1),
             "shorthandsManagerWidget"
         )
@@ -244,10 +284,13 @@ class Ui_MainWindow(object):
             self.layoutsSwitcher.removeWidget(layoutButton)
 
         layoutIndex = len(self.layoutButtons)
+        layoutNames = ["EMAIL LAYOUT", "CODING LAYOUT"]
         self.layoutButtons.append(
             LayoutButton(self, LayoutButtonStyle.DEFAULT_STYLE,
                         lambda : self.switchLayout(layoutIndex),
-                         f"LAYOUT {layoutIndex + 1}")
+                        layoutNames[layoutIndex - 1]
+                        #  f"LAYOUT {layoutIndex + 1}"
+                         )
         )
 
         for layoutButton in self.layoutButtons:
@@ -280,6 +323,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
+    app.setApplicationName("KeyAccess")
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
