@@ -3,7 +3,9 @@ import json
 import sys
 from PyQt5.QtWidgets import *
 
-from BE.advanced_layout.neural_network_support.Supporter import Supporter
+from BE.advanced_layout.neural_network_support.SupporterCompletion import SupporterCompletion
+from BE.advanced_layout.neural_network_support.SupporterCorrection import SupporterCorrection
+from BE.library import keyboard
 
 if __name__ == "__main__":
     app = QApplication([])
@@ -15,8 +17,21 @@ if __name__ == "__main__":
         loaded_json = json.load(f)
         keyboardController.process_configuration_file(loaded_json)
     keyboardController.set_layout(0)
+    support_correction = True
+    support_completion = False
 
+    supporter = None
+    if support_correction:
+        supporter = SupporterCorrection()
+    if support_completion:
+        supporter = SupporterCompletion()
+        def process():
+            supporter.chosen = True
+            supporter._process_word()
+
+        keyboard.add_hotkey('ctrl+shift', process)
     app.exec_()
-    supporter  = Supporter()
-    supporter.start_listen()
+    print('starting...')
+    if supporter is not None:
+        supporter.start_listen()
 
