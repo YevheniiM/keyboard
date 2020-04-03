@@ -1,5 +1,6 @@
 import time
-import keyboard
+
+from BE.library import keyboard
 from KeyHint import KeyHint
 
 
