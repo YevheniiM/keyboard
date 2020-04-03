@@ -67,7 +67,7 @@ if __name__ == "__main__":
     else:
         model.cpu()
 
-    cor = Completor(params, model, classes=5)
+    cor = Completor(params, model, classes=1)
 
     HOST = '127.0.0.1'
     PORT = 65432
@@ -89,4 +89,4 @@ if __name__ == "__main__":
                     data = conn.recv(1024)
                     if not data:
                         break
-                    conn.sendto(str.encode(cor.add_letter(data.decode())), addr)
+                    conn.sendto(str.encode(cor.add_letter(data.decode())[0]), addr)

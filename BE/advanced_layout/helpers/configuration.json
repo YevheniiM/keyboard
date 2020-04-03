@@ -4,7 +4,7 @@
     {
       "access_with_hot_key": {
         "ctrl": {
-          "a": "b",
+          "u": "b",
           "c": "d"
         },
         "alt": {
@@ -23,10 +23,15 @@
       },
       "keymap": {
         "a": [
-          "a", "h", "f", "g"
+          "a",
+          "h",
+          "f",
+          "g"
         ],
-        "s": [
-          "s", "e", "f"
+        "z": [
+          "r",
+          "e",
+          "f"
         ]
       },
       "mode": {
@@ -35,6 +40,10 @@
       },
       "commands": {
         "chrome": "start chrome"
+      },
+      "ai": {
+        "correction": false,
+        "completion": true
       }
     },
     {
@@ -58,10 +67,15 @@
       },
       "keymap": {
         "a": [
-          "a", "h", "f", "g"
+          "a",
+          "h",
+          "f",
+          "g"
         ],
         "s": [
-          "s", "e", "f"
+          "s",
+          "e",
+          "f"
         ]
       },
       "mode": {

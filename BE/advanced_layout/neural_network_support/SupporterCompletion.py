@@ -2,6 +2,7 @@ from transformers import AutoModelWithLMHead, AutoTokenizer
 import torch
 import time
 
+from BE.AI.client import run
 from BE.library.keyboard import STOP_CHARACTERS
 
 tokenizer = AutoTokenizer.from_pretrained("roberta-base")
@@ -14,27 +15,17 @@ nltk.download('punkt')
 from BE.library import keyboard
 
 
-def send_to_network(sentence):
-    sequence = sentence + tokenizer.mask_token
-
-    input_ = tokenizer.encode(sequence, return_tensors="pt")
-    mask_token_index = torch.where(input_ == tokenizer.mask_token_id)[1]
-
-    token_logits = model(input_)[0]
-    mask_token_logits = token_logits[0, mask_token_index, :]
-
-    token = torch.topk(mask_token_logits, 1, dim=1).indices[0].tolist()
-    if not token:
-        return
-
-    return sequence.replace(tokenizer.mask_token, tokenizer.decode([token[0]])).split(' ')[-1]
+def send_to_network(char):
+    corrected = run(char)
+    return str(corrected)[2:-1]
 
 
 class SupporterCompletion:
     def __init__(self, hint):
-        self.sentence_part = ''
+        self.sentence = ''
         self.chosen = False
         self.hint = hint
+        send_to_network(' ')
 
     @staticmethod
     def _generate_events():
@@ -44,29 +35,31 @@ class SupporterCompletion:
     def start_listen(self):
         characters = keyboard.get_typed_characters(SupporterCompletion._generate_events())
         while True:
-            self.sentence_part += next(characters)
+            self.current_character = next(characters)
+            self.sentence += self.current_character
             self._process_word()
 
     def _process_word(self):
-        if self.sentence_part and self.sentence_part[-1] in STOP_CHARACTERS:
-            print('cleaning...')
-            self.sentence_part = ''
-            # destroy window
+        print(self.current_character)
+        print('---------------')
+        suggestion = send_to_network(self.current_character)
+        print(suggestion)
+
+        if self.current_character in STOP_CHARACTERS:
+            self.sentence = ''
+        #     # destroy window
         else:
-            print('sending: ', self.sentence_part)
-            predicted_word = send_to_network(self.sentence_part)
-            print('predicted: ', predicted_word)
-            self.hint.change_text_hint(predicted_word)
+            self.hint.change_text_hint(suggestion)
             self.hint.window_show()
-            
+
             if self.chosen:
-                for _ in self.sentence_part.split(' ')[-1]:
+                for _ in self.sentence.split()[-1]:
                     keyboard.send('backspace')
                     time.sleep(0.01)
+                    print('backspace pressed')
 
-                keyboard.write(predicted_word)
+                for c in self.sentence + " " + suggestion:
+                    keyboard.write(c)
+                    time.sleep(0.01)
 
-                index = self.sentence_part.rfind(' ')
-                self.sentence_part = self.sentence_part[:index]
-                self.sentence_part += predicted_word
                 self.chosen = False
