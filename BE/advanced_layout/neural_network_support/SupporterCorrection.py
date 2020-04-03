@@ -6,6 +6,7 @@ from BE.AI.client import run
 
 import nltk
 
+from BE.advanced_layout.KeyboardCheckHint import KeyboardCheckHint
 from BE.advanced_layout.KeyboardHintController import setupHint
 from BE.library import keyboard
 from BE.library.keyboard import STOP_CHARACTERS
@@ -15,7 +16,6 @@ nltk.download('punkt')
 
 def send_to_network(sentence):
     corrected = run(sentence)
-    print(str(corrected)[2:-1])
     return str(corrected)[2:-1]
 
 
