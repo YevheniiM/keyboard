@@ -4,7 +4,6 @@ import time
 
 from BE.library.keyboard import STOP_CHARACTERS
 
-
 tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 model = AutoModelWithLMHead.from_pretrained("roberta-base")
 
@@ -32,9 +31,10 @@ def send_to_network(sentence):
 
 
 class SupporterCompletion:
-    def __init__(self):
+    def __init__(self, hint):
         self.sentence_part = ''
         self.chosen = False
+        self.hint = hint
 
     @staticmethod
     def _generate_events():
@@ -53,12 +53,13 @@ class SupporterCompletion:
             self.sentence_part = ''
             # destroy window
         else:
+            print('sending: ', self.sentence_part)
+            predicted_word = send_to_network(self.sentence_part)
+            print('predicted: ', predicted_word)
+            self.hint.change_text_hint(predicted_word)
+            self.hint.window_show()
+            
             if self.chosen:
-                print('sending: ', self.sentence_part)
-
-                predicted_word = send_to_network(self.sentence_part)
-                print('predicted: ', predicted_word)
-
                 for _ in self.sentence_part.split(' ')[-1]:
                     keyboard.send('backspace')
                     time.sleep(0.01)
@@ -69,4 +70,3 @@ class SupporterCompletion:
                 self.sentence_part = self.sentence_part[:index]
                 self.sentence_part += predicted_word
                 self.chosen = False
-

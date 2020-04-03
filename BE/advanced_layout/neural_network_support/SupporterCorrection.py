@@ -20,8 +20,9 @@ def send_to_network(sentence):
 
 
 class SupporterCorrection:
-    def __init__(self):
+    def __init__(self, hint):
         self.current_string = ''
+        self.hint = hint
 
     def start_listen(self):
         characters = keyboard.get_typed_characters(SupporterCorrection._generate_events())
@@ -49,7 +50,7 @@ class SupporterCorrection:
                 to_correct.append(corrected_words[i])
 
         # ЗЕНИК, ТУТ ТВОЯ ФУНКЦІЯ З ВІКОНЦЕМ
-        chosen = setupHint(to_correct)
+        chosen = setupHint(self.hint, to_correct)
 
         chosen_real_indexes = []
         for i in chosen:

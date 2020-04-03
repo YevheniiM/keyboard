@@ -15,7 +15,7 @@ class KeyboardController:
     def process_configuration_file(self, configuration_file=None):
         if configuration_file is None:
             return
-        self.id = configuration_file['id']
+        # self.id = configuration_file['id']
         self.layouts.clear()
         for layout in configuration_file['layouts']:
             self.layouts.append(layout)
