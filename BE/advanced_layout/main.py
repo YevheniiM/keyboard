@@ -1,13 +1,14 @@
 from BE.advanced_layout.KeyboardController import KeyboardController
 import json
 import sys
+from PyQt5.QtWidgets import *
 
-# from BE.advanced_layout.neural_network_support.SupporterCompletion import SupporterCompletion
 from BE.advanced_layout.neural_network_support.SupporterCompletion import SupporterCompletion
 from BE.advanced_layout.neural_network_support.SupporterCorrection import SupporterCorrection
 from BE.library import keyboard
 
 if __name__ == "__main__":
+    app = QApplication([])
     if len(sys.argv) != 2:
         print("Invalid number of parameters")
         exit(-1)
@@ -34,3 +35,5 @@ if __name__ == "__main__":
     if supporter is not None:
         print('starting...')
         supporter.start_listen()
+
+    app.exec_()
