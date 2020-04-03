@@ -31,6 +31,6 @@ if __name__ == "__main__":
 
         keyboard.add_hotkey('ctrl+shift', process)
 
-    print('starting...')
     if supporter is not None:
+        print('starting...')
         supporter.start_listen()

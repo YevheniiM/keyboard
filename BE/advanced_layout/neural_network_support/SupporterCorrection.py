@@ -18,7 +18,7 @@ def send_to_network(sentence):
 
 def choose_what_correct(corrected_words):
     # повертає ті індекси, які треба виправити або None, якщо не треба
-    return [0]
+    return [0, 1, 2, 3]
 
 
 class SupporterCorrection:
@@ -58,7 +58,7 @@ class SupporterCorrection:
             if len(to_correct) > i:
                 chosen_real_indexes.append(corrected_words.index(to_correct[i]))
 
-        final = ''
+        final = ' '
 
         for i in range(len(words_with_punct)):
             whitespace = ' ' if i != 0 else ''
