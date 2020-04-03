@@ -61,20 +61,33 @@ TIP_LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
 class AIHelper():
     def __init__(self):
         self.label = U.initLabel("AI HELPER", (60, 15))
-        self.on = U.initRadioButton("On")
-        self.off = U.initRadioButton("Off")
+        self.correction = U.initRadioButton("Correction")
+        self.completion = U.initRadioButton("Completion")
 
         self._setStyles()
-        self.widgets = [self.label, self.on, self.off]
+        self.widgets = [self.label, self.correction, self.completion]
 
     def _setStyles(self):
         self.label.setStyleSheet(REMAP_MODE_LABEL_STYLE)
         self.label.setFont(LABEL_FONT)
-        self.on.setStyleSheet(RADIO_BUTTON_STYLE)
-        self.on.setFont(RADIO_BUTTON_FONT)
-        self.off.setStyleSheet(RADIO_BUTTON_STYLE)
-        self.off.setFont(RADIO_BUTTON_FONT)
+        self.correction.setStyleSheet(RADIO_BUTTON_STYLE)
+        self.correction.setFont(RADIO_BUTTON_FONT)
+        self.completion.setStyleSheet(RADIO_BUTTON_STYLE)
+        self.completion.setFont(RADIO_BUTTON_FONT)
 
+    def saveAIState(self, layouts, layoutIndex):
+        layouts[layoutIndex]['ai'] = {
+            'correction': self.correction.isChecked(),
+            'completion': self.completion.isChecked()
+        }
+
+    # def saveValue(self, layouts, layoutIndex):
+    #     layouts[layoutIndex]['mode']['value'] = int(self.value.text())
+
+    def loadAIState(self, layouts, layoutIndex):
+        # self.value.setText(str(layouts[layoutIndex]['mode']['value']))
+        self.correction.setChecked(layouts[layoutIndex]['ai']['correction'])
+        self.completion.setChecked(layouts[layoutIndex]['ai']['completion'])
 
 class TextStyle():
     def __init__(self):
@@ -93,15 +106,3 @@ class TextStyle():
         self.formal.setStyleSheet(RADIO_BUTTON_STYLE)
         self.formal.setFont(RADIO_BUTTON_FONT)
 
-    # def saveRadioState(self, layouts, layoutIndex):
-    #     layouts[layoutIndex]['mode']['type'] = 'long_press' \
-    #                                             if self.on.isChecked() \
-    #                                             else 'multiple_press'
-
-    # def saveValue(self, layouts, layoutIndex):
-        # layouts[layoutIndex]['mode']['value'] = int(self.value.text())
-
-    # def loadModeState(self, layouts, layoutIndex):
-    #     # self.value.setText(str(layouts[layoutIndex]['mode']['value']))
-    #     self.on.setChecked(layouts[layoutIndex]['mode']['type'] == 'long_press')
-    #     self.off.setChecked(layouts[layoutIndex]['mode']['type'] == 'multiple_press')

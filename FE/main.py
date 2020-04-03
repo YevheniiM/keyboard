@@ -43,7 +43,11 @@ class Ui_MainWindow(object):
                 'type': 'long_press',
                 'value': 1
                 },
-            'key_strings' : {}
+            'key_strings' : {},
+            'ai': {
+                'correction': False,
+                'completion': False
+            }
         }]
         self.currentLayout = 0
         # ====== INIT CONFIGS ======
@@ -116,12 +120,12 @@ class Ui_MainWindow(object):
         )
 
         self.aiHelper = AIHelper()
-        # self.aiHelper.on.toggled.connect(
-        #     lambda : self.aiHelper.saveRadioState(self.layouts, self.currentLayout)
-        # )
-        # self.aiHelper.off.toggled.connect(
-        #     lambda : self.aiHelper.saveRadioState(self.layouts, self.currentLayout)
-        # )
+        self.aiHelper.correction.toggled.connect(
+            lambda : self.aiHelper.saveAIState(self.layouts, self.currentLayout)
+        )
+        self.aiHelper.completion.toggled.connect(
+            lambda : self.aiHelper.saveAIState(self.layouts, self.currentLayout)
+        )
         [self.aiWidget.addWidget(m) for m in self.aiHelper.widgets]
         # ====== AI HELPER ======
 
@@ -248,23 +252,41 @@ class Ui_MainWindow(object):
                 self.wrapper.layout().addWidget(widget, shorthand[0], n)
 
     def saveRemaps(self):
+        self.shorthands.saveShorthandState(self.layouts, self.currentLayout)
+
         resultFile = {'layouts': []}
         for n, remap in enumerate(self.remaps):
             resultFile['layouts'].append({
                 'keymap': remap,
                 'mode': self.layouts[n]['mode'],
+                'key_strings': self.layouts[n]['key_strings'],
+                'ai': self.layouts[n]['ai']
             })
-        options = QtWidgets.QFileDialog.Options()
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
-                                                                QtWidgets.QWidget(),
-                                                                "Save configuration file",
-                                                                "config.json",
-                                                                "JSON (*.json)",
-                                                                options=options
-                                                            )
+        # UNCOMMENT FOR DEPLOY
+        # options = QtWidgets.QFileDialog.Options()
+        # fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
+        #                                                         QtWidgets.QWidget(),
+        #                                                         "Save configuration file",
+        #                                                         "config.json",
+        #                                                         "JSON (*.json)",
+        #                                                         options=options
+        #                                                     )
+        fileName = '../BE/advanced_layout/helpers/config.json'
         if fileName != '':
             with open(fileName, 'w') as jf:
                 json.dump(resultFile, jf)
+        self.notify()
+
+    def notify(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+
+        msg.setText("The configuration file has been saved")
+        # msg.setInformativeText("This is additional information")
+        msg.setWindowTitle("Configuration file saved")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            
+        retval = msg.exec_()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -302,7 +324,11 @@ class Ui_MainWindow(object):
                 'type': 'long_press',
                 'value': 1
                 },
-            'key_strings': {}
+            'key_strings': {},
+            'ai': {
+                'correction': False,
+                'completion': False
+            }
         })
         if len(self.layoutButtons) == 3:
             self.layoutAdder.setEnabled(False)
@@ -312,9 +338,11 @@ class Ui_MainWindow(object):
         self.layoutButtons[self.currentLayout].setStyleSheet(LayoutButtonStyle.DEFAULT_STYLE)
         self.layoutButtons[layoutIndex].setStyleSheet(LayoutButtonStyle.ACTIVE_LAYOUT)
         self.shorthands.saveShorthandState(self.layouts, self.currentLayout)
+        print(self.layouts)
         self.currentLayout = layoutIndex
 
         self.mode.loadModeState(self.layouts, layoutIndex)
+        self.aiHelper.loadAIState(self.layouts, layoutIndex)
         self.shorthands.loadShorthandState(self.layouts, layoutIndex)
         self.initLayout(layoutIndex)
 
