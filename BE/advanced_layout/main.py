@@ -16,6 +16,7 @@ if __name__ == "__main__":
         keyboardController.process_configuration_file(loaded_json)
     keyboardController.set_layout(0)
 
-    supporter = Supporter()
-    supporter.start_listen()
     app.exec_()
+    supporter  = Supporter()
+    supporter.start_listen()
+

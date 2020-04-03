@@ -2,10 +2,6 @@ from BE.advanced_layout.KeyButton import KeyButton
 from BE.library import keyboard
 
 
-def hooked(e):
-    print(e.event_type)
-
-
 def add_remap_buttons(keymap, mode):
     for key in keymap:
         if mode['type'] == 'simple_press':
