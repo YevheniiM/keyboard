@@ -35,9 +35,9 @@ class KeyboardCheckHint:
                               | Qt.FramelessWindowHint | Qt.Popup
                               | Qt.WindowStaysOnTopHint)
 
-        layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        self.layout = QVBoxLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
         window.setContentsMargins(0, 0, 0, 0)
         font = QFont("Arial", 16, QFont.Bold)
 
@@ -48,11 +48,11 @@ class KeyboardCheckHint:
             self.buttons[-1].setAlignment(Qt.AlignCenter)
             self.buttons[-1].setStyleSheet(self.nonActiveButton)
             self.buttons[-1].setFont(font)
-            layout.addWidget(self.buttons[-1])
+            self.layout.addWidget(self.buttons[-1])
         self.buttons[self.current_button].setStyleSheet(self.activeButton)
 
         widget = QWidget()
-        widget.setLayout(layout)
+        widget.setLayout(self.layout)
         window.setFixedSize(24 * max([len(item) for item in hints]), 60 * len(hints))
         window.setAttribute(Qt.WA_TranslucentBackground, True)
         window.setCentralWidget(widget)
@@ -94,3 +94,10 @@ class KeyboardCheckHint:
 
     def get_active_index(self):
         return self.choosenButtons
+
+    def set_new_hints(self, hints):
+        for i in range(0, len(self.buttons)):
+            self.buttons[i].setText(hints[i])
+
+
+
