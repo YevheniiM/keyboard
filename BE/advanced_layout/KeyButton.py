@@ -1,7 +1,6 @@
 import time
-
 from BE.library import keyboard
-from KeyHint import KeyHint
+from BE.advanced_layout.KeyHint import KeyHint
 
 
 class KeyButton:
