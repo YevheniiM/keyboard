@@ -81,6 +81,7 @@ from __future__ import print_function as _print_function
 
 from BE.library.keyboard.constants import STOP_CHARACTERS
 
+
 version = '0.13.4'
 
 import re as _re

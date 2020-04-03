@@ -3,14 +3,6 @@
   "layouts": [
     {
       "access_with_hot_key": {
-        "ctrl": {
-          "a": "b",
-          "c": "d"
-        },
-        "alt": {
-          "w": "t",
-          "e": "r"
-        }
       },
       "shortcuts": {
         "ctrl+insert": "ctrl+c",

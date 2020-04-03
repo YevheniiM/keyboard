@@ -19,7 +19,7 @@ def add_access_with_hot_key(shortcut_keys):
     for shortcut_key in shortcut_keys:
         for shortcut in shortcut_keys[shortcut_key]:
             keyboard.remap_hotkey(shortcut_key + '+' + shortcut,
-                                      shortcut_keys[shortcut_key][shortcut])
+                                  shortcut_keys[shortcut_key][shortcut])
 
 
 def add_control_shortcut(callback, len):
