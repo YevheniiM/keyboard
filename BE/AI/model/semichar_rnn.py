@@ -14,8 +14,9 @@ class SemiCharRNN(nn.Module):
         self.n_layers = n_layers
         self.n_hidden = n_hidden
         
-        
-        self.rnn = nn.LSTM(3*len(self.dataset_params["chars"]), n_hidden, n_layers, 
+        self.input_size = (128 if dataset_params.get("fasttext", False) else 3*len(self.dataset_params["chars"]))
+
+        self.rnn = nn.LSTM(self.input_size, n_hidden, n_layers,
                             dropout=drop_prob, batch_first=True)
         
         self.dropout = nn.Dropout(drop_prob)
