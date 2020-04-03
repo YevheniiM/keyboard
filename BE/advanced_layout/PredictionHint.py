@@ -35,7 +35,7 @@ class PredictionHint:
 
         self.widget = QWidget()
         self.widget.setLayout(layout)
-        window.setFixedSize(12 * len(text), 60)
+        window.setFixedSize(24 * len(text), 60)
         window.setAttribute(Qt.WA_TranslucentBackground, True)
         window.setCentralWidget(self.widget)
         self.window = window
@@ -43,7 +43,7 @@ class PredictionHint:
 
     def change_text_hint(self, text):
         self.texthint.setText(text)
-        self.window.setFixedSize(12 * len(text), 60)
+        self.window.setFixedSize(24 * len(text), 60)
         self.window.setCentralWidget(self.widget)
 
     def window_show(self):

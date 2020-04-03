@@ -53,7 +53,7 @@ class KeyboardCheckHint:
 
         widget = QWidget()
         widget.setLayout(layout)
-        window.setFixedSize(12 * max([len(item) for item in hints]), 60 * len(hints))
+        window.setFixedSize(24 * max([len(item) for item in hints]), 60 * len(hints))
         window.setAttribute(Qt.WA_TranslucentBackground, True)
         window.setCentralWidget(widget)
         self.window = window
