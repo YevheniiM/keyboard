@@ -17,7 +17,6 @@ if __name__ == "__main__":
         loaded_json = json.load(f)
         keyboardController.process_configuration_file(loaded_json)
     keyboardController.set_layout(0)
-
     support_correction = True
     support_completion = False
 
@@ -31,9 +30,8 @@ if __name__ == "__main__":
             supporter._process_word()
 
         keyboard.add_hotkey('ctrl+shift', process)
-
+    app.exec_()
     print('starting...')
     if supporter is not None:
         supporter.start_listen()
 
-    app.exec_()
