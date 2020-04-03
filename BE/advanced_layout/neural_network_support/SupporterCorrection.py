@@ -2,32 +2,32 @@ import re
 import string
 import time
 from typing import Optional
+from AI.client import run
 
 import nltk
-
-nltk.download('punkt')
-
 from BE.library import keyboard
 from BE.library.keyboard import STOP_CHARACTERS
 
+nltk.download('punkt')
+
 
 def send_to_network(sentence):
-    arr = sentence.split(' ')
-    new_arr = [i + '_corrected' for i in arr]
-    return ' '.join(new_arr)
+    corrected = run(sentence)
+    print(str(corrected)[2:-1])
+    return str(corrected)[2:-1]
 
 
 def choose_what_correct(corrected_words):
     # повертає ті індекси, які треба виправити або None, якщо не треба
-    return 1, 3, 5
+    return [0]
 
 
-class Supporter:
+class SupporterCorrection:
     def __init__(self):
         self.current_string = ''
 
     def start_listen(self):
-        characters = keyboard.get_typed_characters(Supporter._generate_events())
+        characters = keyboard.get_typed_characters(SupporterCorrection._generate_events())
         while True:
             self.current_string += next(characters)
             self.check_current_string()
@@ -56,7 +56,8 @@ class Supporter:
 
         chosen_real_indexes = []
         for i in chosen:
-            chosen_real_indexes.append(corrected_words.index(to_correct[i]))
+            if len(to_correct) > i:
+                chosen_real_indexes.append(corrected_words.index(to_correct[i]))
 
         final = ''
 
