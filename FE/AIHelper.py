@@ -61,8 +61,8 @@ TIP_LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
 class AIHelper():
     def __init__(self):
         self.label = U.initLabel("AI HELPER", (60, 15))
-        self.on = U.initRadioButton("On")
-        self.off = U.initRadioButton("Off")
+        self.on = U.initRadioButton("Correction")
+        self.off = U.initRadioButton("Completion")
 
         self._setStyles()
         self.widgets = [self.label, self.on, self.off]
