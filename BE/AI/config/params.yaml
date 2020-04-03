@@ -1,0 +1,11 @@
+batch_size: 200
+clip: 5
+dataroot: data/big.txt
+experiment_desc: testsfv
+model: {attn_model: general, dim: 100, drop_prob: 0.3, grad_clip: 5, loss: CE, model_n: semichar_rnn,
+  n_hidden: 650, n_input: 1003, n_layers: 2, vs: 1003}
+num_epochs: 1
+optimizer: {lr: 0.003, name: adam}
+print_every: 100
+seq_lenght: 50
+seq_length: 30

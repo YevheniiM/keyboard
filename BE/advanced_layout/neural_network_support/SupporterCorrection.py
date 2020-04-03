@@ -1,8 +1,7 @@
 import re
 import string
 import time
-from typing import Optional
-from AI.client import run
+from BE.AI.client import run
 
 import nltk
 from BE.library import keyboard
