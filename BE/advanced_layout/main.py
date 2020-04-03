@@ -1,7 +1,9 @@
-from KeyboardController import KeyboardController
+from BE.advanced_layout.KeyboardController import KeyboardController
 import json
 import sys
 from PyQt5.QtWidgets import *
+
+from BE.advanced_layout.neural_network_support.Supporter import Supporter
 
 if __name__ == "__main__":
     app = QApplication([])
@@ -13,4 +15,7 @@ if __name__ == "__main__":
         loaded_json = json.load(f)
         keyboardController.process_configuration_file(loaded_json)
     keyboardController.set_layout(0)
+
+    supporter = Supporter()
+    supporter.start_listen()
     app.exec_()

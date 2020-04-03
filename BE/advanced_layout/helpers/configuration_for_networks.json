@@ -1,0 +1,100 @@
+{
+  "id": 0,
+  "layouts": [
+    {
+      "access_with_hot_key": {
+        "ctrl": {
+          "a": "b",
+          "c": "d"
+        },
+        "alt": {
+          "w": "t",
+          "e": "r"
+        }
+      },
+      "shortcuts": {
+        "ctrl+insert": "ctrl+c",
+        "shift+insert": "alt+c",
+        "alt+w": "t"
+      },
+      "key_strings": {
+        "@@": "xmolodtsov@gmail.com",
+        "_phone_": "+30502037725"
+      },
+      "keymap": {
+      },
+      "mode": {
+        "type": "multiple_press",
+        "value": 1
+      },
+      "commands": {
+        "chrome": "start chrome"
+      }
+    },
+    {
+      "access_with_hot_key": {
+        "ctrl": {
+          "a": "b",
+          "c": "d"
+        },
+        "alt": {
+          "w": "t",
+          "e": "r"
+        }
+      },
+      "shortcuts": {
+        "ctrl+v": "alt+v",
+        "shift+insert": "alt+c"
+      },
+      "key_strings": {
+        "@@": "popenyuk@gmail.com",
+        "_phone_": "+30502037725"
+      },
+      "keymap": {
+        "a": [
+          "a", "h", "f", "g"
+        ],
+        "s": [
+          "s", "e", "f"
+        ]
+      },
+      "mode": {
+        "type": "long_press",
+        "value": 1
+      },
+      "commands": {
+        "chrome": "start chrome"
+      }
+    },
+    {
+      "access_with_hot_key": {
+        "ctrl": {
+          "a": "b",
+          "c": "d"
+        },
+        "alt": {
+          "w": "t",
+          "e": "r"
+        }
+      },
+      "shortcuts": {
+        "ctrl+v": "alt+v",
+        "shift+insert": "alt+c"
+      },
+      "key_strings": {
+        "@@": "popenyuk@gmail.com",
+        "_phone_": "+30502037725"
+      },
+      "keymap": {
+        "a": "b",
+        "s": "d"
+      },
+      "mode": {
+        "type": "simple_press"
+      },
+      "commands": {
+        "chrome": "start chrome"
+      }
+    }
+  ]
+}
