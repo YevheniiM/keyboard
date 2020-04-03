@@ -1,9 +1,12 @@
 import re
 import string
 import time
+
 from BE.AI.client import run
 
 import nltk
+
+from BE.advanced_layout.KeyboardHintController import setupHint
 from BE.library import keyboard
 from BE.library.keyboard import STOP_CHARACTERS
 
@@ -14,11 +17,6 @@ def send_to_network(sentence):
     corrected = run(sentence)
     print(str(corrected)[2:-1])
     return str(corrected)[2:-1]
-
-
-def choose_what_correct(corrected_words):
-    # повертає ті індекси, які треба виправити або None, якщо не треба
-    return [0]
 
 
 class SupporterCorrection:
@@ -51,7 +49,7 @@ class SupporterCorrection:
                 to_correct.append(corrected_words[i])
 
         # ЗЕНИК, ТУТ ТВОЯ ФУНКЦІЯ З ВІКОНЦЕМ
-        chosen = choose_what_correct(to_correct)
+        chosen = setupHint(to_correct)
 
         chosen_real_indexes = []
         for i in chosen:

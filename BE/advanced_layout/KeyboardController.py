@@ -1,7 +1,7 @@
+from BE.advanced_layout.RemapController import add_remap_buttons
 from BE.advanced_layout.ShortcutsControll import (
     add_shortcuts, add_abbreviations, remove_shortcuts_and_abbreviations,
     add_control_shortcut, add_access_with_hot_key)
-from BE.advanced_layout.RemapController import add_remap_buttons
 
 
 class KeyboardController:

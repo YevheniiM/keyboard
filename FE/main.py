@@ -1,12 +1,14 @@
+import threading
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from LayoutButton import LayoutButton, LayoutButtonStyle
-from DragButton import DragButton
-from BoxLayoutFactory import BoxLayoutFactory
-from RemapMode import RemapMode
-from Shorthands import Shorthands
-from TestTextBox import TestTextBox
-from AIHelper import AIHelper, TextStyle
+from FE.AIHelper import AIHelper, TextStyle
+from FE.BoxLayoutFactory import BoxLayoutFactory
+from FE.DragButton import DragButton
+from FE.LayoutButton import LayoutButton, LayoutButtonStyle
+from FE.RemapMode import RemapMode
+from FE.Shorthands import Shorthands
+from FE.TestTextBox import TestTextBox
 
 import json
 
@@ -42,8 +44,8 @@ class Ui_MainWindow(object):
             'mode': {
                 'type': 'long_press',
                 'value': 1
-                },
-            'key_strings' : {}
+            },
+            'key_strings': {}
         }]
         self.currentLayout = 0
         # ====== INIT CONFIGS ======
@@ -63,7 +65,8 @@ class Ui_MainWindow(object):
         )
         self.layoutsSwitcher.setAlignment(QtCore.Qt.AlignLeft)
         self.layoutsSwitcher.setSpacing(25)
-        self.layoutButtons = [LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "EVERYDAY LAYOUT")]
+        self.layoutButtons = [
+            LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda: self.switchLayout(0), "EVERYDAY LAYOUT")]
         self.layoutAdder = LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
 
         [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
@@ -96,13 +99,13 @@ class Ui_MainWindow(object):
 
         self.mode = RemapMode()
         self.mode.longPress.toggled.connect(
-            lambda : self.mode.saveRadioState(self.layouts, self.currentLayout)
+            lambda: self.mode.saveRadioState(self.layouts, self.currentLayout)
         )
         self.mode.multPress.toggled.connect(
-            lambda : self.mode.saveRadioState(self.layouts, self.currentLayout)
+            lambda: self.mode.saveRadioState(self.layouts, self.currentLayout)
         )
         self.mode.value.editingFinished.connect(
-            lambda : self.mode.saveValue(self.layouts, self.currentLayout)
+            lambda: self.mode.saveValue(self.layouts, self.currentLayout)
         )
         [self.modeWidget.addWidget(m) for m in self.mode.widgets]
         # ====== MODE configuration widget ======
@@ -223,7 +226,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def renderShorthandsManager(self):
-        for i in reversed(range(self.shorthandsManagerWidget.count())): 
+        for i in reversed(range(self.shorthandsManagerWidget.count())):
             self.shorthandsManagerWidget.itemAt(i).widget().setParent(None)
 
         self.shorthandsManagerWidget.addWidget(self.shorthands.mainLabel, 0, 0)
@@ -234,7 +237,7 @@ class Ui_MainWindow(object):
         self.shorthandsManagerWidget.addWidget(self.shorthands.shorthandAdder, 2, 2)
 
     def renderShorthandsList(self):
-        for i in reversed(range(self.wrapper.layout().count())): 
+        for i in reversed(range(self.wrapper.layout().count())):
             self.wrapper.layout().itemAt(i).widget().setParent(None)
 
         shorthands = list(self.shorthands.getShorthandsList())
@@ -242,10 +245,12 @@ class Ui_MainWindow(object):
             self.wrapper.setGeometry(QtCore.QRect(390, 220, 450, 30))
         else:
             self.wrapper.setGeometry(QtCore.QRect(390, 220, 450,
-                                    20 * len(shorthands)))
+                                                  20 * len(shorthands)))
         for shorthand in shorthands:
             for n, widget in enumerate(shorthand[1]):
                 self.wrapper.layout().addWidget(widget, shorthand[0], n)
+
+    # ---------------------------------------------------------------
 
     def saveRemaps(self):
         resultFile = {'layouts': []}
@@ -256,15 +261,21 @@ class Ui_MainWindow(object):
             })
         options = QtWidgets.QFileDialog.Options()
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
-                                                                QtWidgets.QWidget(),
-                                                                "Save configuration file",
-                                                                "config.json",
-                                                                "JSON (*.json)",
-                                                                options=options
-                                                            )
+            QtWidgets.QWidget(),
+            "Save configuration file",
+            "config.json",
+            "JSON (*.json)",
+            options=options
+        )
         if fileName != '':
             with open(fileName, 'w') as jf:
                 json.dump(resultFile, jf)
+            with open('D:\\Study\\AI_Competition\\keyboard\\FE\\BE\\advanced_layout\\helpers\\mlk12mk31\\12345.txt', 'w') as f:
+                f.writelines(["ekmqedlkqwmelkqwmelkwqmkemwqlkemwqlkemwqlkemqwk"])
+
+
+
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -272,7 +283,7 @@ class Ui_MainWindow(object):
 
     def initLayout(self, layoutIndex):
         for n in range(len(self.rows)):
-            for i in reversed(range(self.rows[n].count())): 
+            for i in reversed(range(self.rows[n].count())):
                 self.rows[n].itemAt(i).widget().setParent(None)
 
         for n, keyboardRow in enumerate(defaultKeyboardLayout):
@@ -287,9 +298,9 @@ class Ui_MainWindow(object):
         layoutNames = ["EMAIL LAYOUT", "CODING LAYOUT"]
         self.layoutButtons.append(
             LayoutButton(self, LayoutButtonStyle.DEFAULT_STYLE,
-                        lambda : self.switchLayout(layoutIndex),
-                        layoutNames[layoutIndex - 1]
-                        #  f"LAYOUT {layoutIndex + 1}"
+                         lambda: self.switchLayout(layoutIndex),
+                         layoutNames[layoutIndex - 1]
+                         #  f"LAYOUT {layoutIndex + 1}"
                          )
         )
 
@@ -301,7 +312,7 @@ class Ui_MainWindow(object):
             'mode': {
                 'type': 'long_press',
                 'value': 1
-                },
+            },
             'key_strings': {}
         })
         if len(self.layoutButtons) == 3:
@@ -321,6 +332,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     app.setApplicationName("KeyAccess")

@@ -2,6 +2,9 @@ from transformers import AutoModelWithLMHead, AutoTokenizer
 import torch
 import time
 
+from BE.library.keyboard import STOP_CHARACTERS
+
+
 tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 model = AutoModelWithLMHead.from_pretrained("roberta-base")
 
@@ -10,7 +13,6 @@ import nltk
 nltk.download('punkt')
 
 from BE.library import keyboard
-from BE.library.keyboard import STOP_CHARACTERS
 
 
 def send_to_network(sentence):

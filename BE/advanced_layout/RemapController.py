@@ -1,4 +1,5 @@
 from BE.advanced_layout.KeyButton import KeyButton
+
 from BE.library import keyboard
 
 
@@ -11,4 +12,4 @@ def add_remap_buttons(keymap, mode):
             if mode['type'] == 'multiple_press':
                 keyboard.hook_key(key, keyButton.hook_multiple_press, True)
             elif mode['type'] == 'long_press':
-                keyboard.hook_key(key,  keyButton.hook_long_press, True)
+                keyboard.hook_key(key, keyButton.hook_long_press, True)
