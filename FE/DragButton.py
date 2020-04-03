@@ -77,8 +77,10 @@ specialButtonSizes = {
 
 class DragButton(QtWidgets.QPushButton):
     def __init__(self, layoutIndex, remaps, button, *args):
+        remapped = False
         if button in remaps[layoutIndex]:
-            button = str(remaps[layoutIndex][button])
+            button = '/'.join(remaps[layoutIndex][button])
+            remapped = True
         else:
             self.defaultText = button
         super().__init__(button, *args)
@@ -92,6 +94,14 @@ class DragButton(QtWidgets.QPushButton):
             self.setStyleSheet("background: rgba(0, 0, 0, 0.0);")
         if button in specialButtonSizes:
             self.setFixedSize(int(70) * specialButtonSizes[button], 70)
+        if remapped:
+            self.setStyleSheet(DragButtonStyle.REMAPPED_TARGET_STYLE)
+        
+        remapSources = []
+        for x in remaps[layoutIndex].items():
+            remapSources += x[1]
+        if button in remapSources:
+            self.setStyleSheet(DragButtonStyle.REMAPPED_SOURCE_STYLE)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
 

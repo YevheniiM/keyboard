@@ -13,11 +13,11 @@ def initRadioButton(radioButtonName):
     return radioButton
 
 
-def initLineEdit(defaultValue='', validator=None):
+def initLineEdit(defaultValue='', validator=None, fixedWidth=100):
     value = QtWidgets.QLineEdit(defaultValue)
     if validator is not None:
         value.setValidator(validator())
-    value.setFixedWidth(100)
+    value.setFixedWidth(fixedWidth)
     return value
 
 

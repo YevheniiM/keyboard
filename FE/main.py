@@ -22,30 +22,47 @@ defaultKeyboardLayout = [
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(930, 650)
+        MainWindow.resize(950, 800)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
-        self.centralWidget.setStyleSheet("background-color: #232F3F")
+        self.centralWidget.setStyleSheet("""
+            background-color: #232F3F;
+        """)
         self.centralWidget.setObjectName("centralWidget")
         self.boxLayoutFactory = BoxLayoutFactory(self.centralWidget)
 
+        # ====== INIT CONFIGS ======
+        self.remaps = [{}]
+        self.layouts = [{
+            'mode': {
+                'type': 'long_press',
+                'value': 1
+                },
+            'key_strings' : {}
+        }]
+        self.currentLayout = 0
+        # ====== INIT CONFIGS ======
+
+        # ====== LAYOUT SWITCHER ======
         self.layoutsSwitcher = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
             (0, 0, 920, 80),
-            (10, 10, 0, 0),
+            (20, 20, 0, 0),
             "layoutsSwithcer"
         )
+        self.layoutsSwitcher.setAlignment(QtCore.Qt.AlignLeft)
+        self.layoutsSwitcher.setSpacing(25)
+        self.layoutButtons = [
+            LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "LAYOUT 1"),
+            LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
+            ]
 
-        self.controlButtons = self.boxLayoutFactory.getLayout(
-            QtWidgets.QHBoxLayout,
-            (0, 80, 230, 130),
-            (10, 10, 0, 0),
-            "controlButtons"
-        )
+        [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
+        # ====== LAYOUT SWITCHER ======
 
         self.rows = [self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (0, 280 + 73 * i, 920, 80),
-            (10, 10, 0, 0),
+            (0, 410 + 73 * i, 920, 80),
+            (20, 10, 0, 0),
             f"row{i}"
         ) for i in range(5)]
 
@@ -58,39 +75,11 @@ class Ui_MainWindow(object):
         # self.statusbar.setObjectName("statusbar")
         # MainWindow.setStatusBar(self.statusbar)
 
-        # ===== SAVE button =====
-        # self.controlButton = QtWidgets.QPushButton("Save")
-        # self.controlButton.setStyleSheet("""
-        #     QPushButton {
-        #         background-color: #54a0ff;
-        #         border: none;
-        #         border-radius: 2%;
-        #     }
-        #     QPushButton:hover {
-        #         background-color: #2e86de;
-        #     }
-        # """)
-        # self.controlButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        # self.controlButton.setCursor(QtCore.Qt.PointingHandCursor)
-        # self.controlButton.clicked.connect(self.saveRemaps)
-        # self.controlButtons.addWidget(self.controlButton)
-        # ===== SAVE button =====
-
-        self.remaps = [{}]
-        self.layouts = [{
-            'mode': {
-                'type': 'long_press',
-                'value': 1
-                },
-            'key_strings' : {}
-        }]
-        self.currentLayout = 0
-
         # ====== MODE configuration widget =====
         self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
-            (10, 80, 125, 140),
-            (0, -9, 0, -1),
+            (10, 100, 200, 140),
+            (10, 10, 0, -1),
             "modeWidget"
         )
 
@@ -107,74 +96,114 @@ class Ui_MainWindow(object):
         [self.modeWidget.addWidget(m) for m in self.mode.widgets]
         # ====== MODE configuration widget ======
 
-        # key strings configuration widget
-        # self.shorthandsWidget = self.boxLayoutFactory.getLayout(
+        # ====== SHORTHANDS configuration =====
+        self.shorthandsManagerWidget = self.boxLayoutFactory.getLayout(
+            QtWidgets.QGridLayout,
+            (370, 100, 480, 100),
+            (10, 10, 0, -1),
+            "shorthandsManagerWidget"
+        )
+        # self.shorthandsListWidget = self.boxLayoutFactory.getLayout(
         #     QtWidgets.QGridLayout,
-        #     (340, 80, 890, 80),
+        #     (370, 180, 450, 200),
         #     (0, 0, 0, 0),
-        #     "shorthandsWidget"
+        #     "shorthandsListWidget"
         # )
+
         self.wrapper = QtWidgets.QWidget()
-        self.wrapper.setGeometry(QtCore.QRect(370, 90, 520, 121))
+        self.wrapper.setGeometry(QtCore.QRect(370, 200, 450, 120))
         self.wrapper.setObjectName("wrapper")
         self.scroll = QtWidgets.QScrollArea(self.centralWidget)
-        self.scroll.setGeometry(QtCore.QRect(370, 90, 520, 121))
+        self.scroll.setGeometry(QtCore.QRect(370, 200, 450, 130))
         self.scroll.setWidget(self.wrapper)
         self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scroll.setStyleSheet("""
             QScrollArea {
                 border: none;
-                background-color: #58DDE8;
-                border-radius: 2%;
             }
         """)
-        self.wrapper.setStyleSheet("""
-            background-color: #58DDE8;
-            border-radius: 2%;
-        """)
+        # self.wrapper.setStyleSheet("""
+        #     border-radius: 2%;
+        # """)
         self.wrapper.setLayout(QtWidgets.QGridLayout())
-        self.shorthands = Shorthands(self.renderShorthands)
-        self.renderShorthands()
-        # end key strings configuration widget
 
-        # test text box start
+        self.shorthands = Shorthands(self.renderShorthandsList)
+        self.renderShorthandsManager()
+        self.renderShorthandsList()
+        # ====== SHORTHANDS configuration =====
+
+        # ====== TEST TEXT box =====
         self.textBoxWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
-            (10, 210, 910, 80),
-            (0, -9, 0, -1),
+            (20, 340, 900, 80),
+            (0, 0, 0, 0),
             "textBoxWidget"
         )
         # self.testTextBox = TestTextBox()
         # [self.textBoxWidget.addWidget(widget) for widget in self.testTextBox.widgets]
         self.textBoxWidget.addWidget(TestTextBox())
-        # test text box end
+        # ====== TEST TEXT box =====
 
-        self.layoutButtons = [
-            LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "Layout 1"),
-            LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
-            ]
-
-        [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
+        # ===== SAVE button =====
+        self.controlButtons = self.boxLayoutFactory.getLayout(
+            QtWidgets.QHBoxLayout,
+            (800, 735, 125, 35),
+            (0, 0, 0, 0),
+            "controlButtons"
+        )
+        BUTTON_FONT = QtGui.QFont("Arial", 10, weight=450)
+        BUTTON_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
+        self.controlButton = QtWidgets.QPushButton("Save")
+        self.controlButton.setStyleSheet("""
+            QPushButton {
+                width: 125px;
+                height: 35px;
+                background-color: #F7B500;
+                border-radius: 9px;
+                color: #474F5C;
+                padding-top: 2px;
+                padding-bottom: 3px;
+            }
+            QPushButton:hover {
+                background-color: #FCCF00;
+            }
+        """)
+        self.controlButton.setFont(BUTTON_FONT)
+        self.controlButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.controlButton.setCursor(QtCore.Qt.PointingHandCursor)
+        self.controlButton.clicked.connect(self.saveRemaps)
+        self.controlButtons.addWidget(self.controlButton)
+        # ===== SAVE button =====
 
         self.initLayout(self.currentLayout)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def renderShorthands(self):
+    def renderShorthandsManager(self):
+        for i in reversed(range(self.shorthandsManagerWidget.count())): 
+            self.shorthandsManagerWidget.itemAt(i).widget().setParent(None)
+
+        self.shorthandsManagerWidget.addWidget(self.shorthands.mainLabel, 0, 0)
+        self.shorthandsManagerWidget.addWidget(self.shorthands.shorthandTip, 1, 0)
+        self.shorthandsManagerWidget.addWidget(self.shorthands.fullTextTip, 1, 1)
+        self.shorthandsManagerWidget.addWidget(self.shorthands.shorthandInput, 2, 0)
+        self.shorthandsManagerWidget.addWidget(self.shorthands.fullTextInput, 2, 1)
+        self.shorthandsManagerWidget.addWidget(self.shorthands.shorthandAdder, 2, 2)
+
+    def renderShorthandsList(self):
         for i in reversed(range(self.wrapper.layout().count())): 
             self.wrapper.layout().itemAt(i).widget().setParent(None)
 
-        widgets2render = list(self.shorthands.getWidgets())
-        self.wrapper.setGeometry(QtCore.QRect(370, 90, 450,
-                                33 * (len(widgets2render) + 1)))
-        for shorthand in widgets2render:
+        shorthands = list(self.shorthands.getShorthandsList())
+        if len(shorthands) == 1:
+            self.wrapper.setGeometry(QtCore.QRect(350, 200, 450, 30))
+        else:
+            self.wrapper.setGeometry(QtCore.QRect(350, 200, 450,
+                                    20 * len(shorthands)))
+        for shorthand in shorthands:
             for n, widget in enumerate(shorthand[1]):
                 self.wrapper.layout().addWidget(widget, shorthand[0], n)
-        self.wrapper.layout().addWidget(self.shorthands.shorthandAdder,
-                                        len(widgets2render), 0,
-                                        len(widgets2render), 4,
-                                        QtCore.Qt.AlignCenter)
 
     def saveRemaps(self):
         resultFile = {'layouts': []}
@@ -205,8 +234,6 @@ class Ui_MainWindow(object):
                 self.rows[n].itemAt(i).widget().setParent(None)
 
         for n, keyboardRow in enumerate(defaultKeyboardLayout):
-            # newButton = DragButton(layoutIndex, self.remaps, f"row {n}")
-            # self.rows[n].addWidget(newButton)
             for button in keyboardRow:
                 self.rows[n].addWidget(DragButton(layoutIndex, self.remaps, button))
 
@@ -218,7 +245,7 @@ class Ui_MainWindow(object):
         self.layoutButtons.insert(-1, 
             LayoutButton(self, LayoutButtonStyle.DEFAULT_STYLE,
                         lambda : self.switchLayout(layoutIndex),
-                         f"Layout {len(self.layoutButtons)}")
+                         f"LAYOUT {len(self.layoutButtons)}")
         )
 
         for layoutButton in self.layoutButtons:
@@ -232,6 +259,8 @@ class Ui_MainWindow(object):
                 },
             'key_strings': {}
         })
+        if len(self.layoutButtons) == 5:
+            self.layoutButtons[-1].setEnabled(False)
 
     def switchLayout(self, layoutIndex):
         print(self.remaps, layoutIndex)

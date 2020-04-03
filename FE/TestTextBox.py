@@ -5,7 +5,7 @@ class TestTextBox(QtWidgets.QWidget):
     def __init__(self):
         super(TestTextBox, self).__init__()
         self.label = QtWidgets.QLabel("Click in this area to test layout.", self)
-        self.label.setFixedSize(910, 60)
+        self.label.setFixedSize(900, 60)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setStyleSheet("""
             border: 2px dashed #424E59;
