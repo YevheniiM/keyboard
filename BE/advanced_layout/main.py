@@ -47,15 +47,13 @@ class SupporterThread(QThread):
             print('starting in a new thread...')
             supporter.start_listen()
 
+
 if __name__ == "__main__":
     app = QApplication([])
-    if len(sys.argv) != 2:
-        print("Invalid number of parameters")
-        exit(-1)
+
     keyboardController = KeyboardController()
     NEURO = ''
-
-    with open(sys.argv[1], 'r') as f:
+    with open(r"D:\Study\AI_Competition\keyboard\BE\advanced_layout\helpers\config.json", 'r') as f:
         loaded_json = json.load(f)
         keyboardController.process_configuration_file(loaded_json)
 
@@ -66,6 +64,7 @@ if __name__ == "__main__":
             NEURO = 'completion'
 
     if not NEURO:
+        print('setting')
         keyboardController.set_layout(0)
     else:
         keyboardCheckHint1 = KeyboardCheckHint(["111111111"])

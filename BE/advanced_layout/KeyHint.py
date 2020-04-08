@@ -32,7 +32,7 @@ class KeyHint:
         window.setContentsMargins(0, 0, 0, 0)
         for letter in hints:
             self.buttons.append(QLabel(window))
-            self.buttons[-1].setText(letter)
+            self.buttons[-1].setText(letter.lower())
             self.buttons[-1].setFrameStyle(QLabel.Panel | QLabel.Sunken)
             self.buttons[-1].setAlignment(Qt.AlignCenter)
             self.buttons[-1].setStyleSheet(self.nonActiveButton)

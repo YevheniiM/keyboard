@@ -12,7 +12,7 @@ class KeyButton:
         self.delay = delay
         self.start_time = -1
         self.current_key = 0
-        self.hint = KeyHint(self.keys)
+        self.hint = KeyHint([k.upper() for k in self.keys])
         self.hint.window_hide()
         self.is_fist_time_press = True
 
@@ -44,6 +44,7 @@ class KeyButton:
             self.current_key += 1
         elif event.event_type == 'down' and (time.time() - self.start_time) > self.delay:
             keyboard.send('backspace')
+            print(self.keys[self.current_key % len(self.keys)])
             keyboard.send(self.keys[self.current_key % len(self.keys)])
             self.hint.activate_next_Button()
             self.start_time = time.time()

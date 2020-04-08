@@ -34,7 +34,7 @@ class KeyboardController:
 
     def __install_keyboard_configuration(self):
         add_remap_buttons(self.layouts[self.last_layout]['keymap'], self.layouts[self.last_layout]['mode'])
-        add_shortcuts(self.layouts[self.last_layout]['shortcuts'])
-        add_access_with_hot_key(self.layouts[self.last_layout]['access_with_hot_key'])
+        # add_shortcuts(self.layouts[self.last_layout]['shortcuts'])
+        # add_access_with_hot_key(self.layouts[self.last_layout]['access_with_hot_key'])
         add_abbreviations(self.layouts[self.last_layout]['key_strings'])
         add_control_shortcut(self.set_layout, len(self.layouts))
