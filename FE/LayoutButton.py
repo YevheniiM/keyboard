@@ -37,8 +37,29 @@ LABEL_FONT = QtGui.QFont("Arial", 10, weight=450)
 LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
 
 
-class LayoutButton(QtWidgets.QPushButton):
-    def __init__(self, ui, layoutStyle, clickConection, *args):
+class QDoublePushButton(QtWidgets.QPushButton):
+    doubleClicked = QtCore.pyqtSignal()
+    clicked = QtCore.pyqtSignal()
+
+    def __init__(self, *args, **kwargs):
+        QtWidgets.QPushButton.__init__(self, *args, **kwargs)
+        self.timer = QtCore.QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.clicked.emit)
+        super().clicked.connect(self.checkDoubleClick)
+
+    @QtCore.pyqtSlot()
+    def checkDoubleClick(self):
+        if self.timer.isActive():
+            self.doubleClicked.emit()
+            self.timer.stop()
+        else:
+            self.timer.start(250)
+
+
+class LayoutButton(QDoublePushButton):
+    def __init__(self, ui, layoutStyle, clickConection,
+                    doubleClickConnection, *args):
         super().__init__(*args)
         self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.setStyleSheet(layoutStyle)
@@ -49,3 +70,5 @@ class LayoutButton(QtWidgets.QPushButton):
             self.setFixedWidth(250)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self.clicked.connect(clickConection)
+        if doubleClickConnection is not None:
+            self.doubleClicked.connect(doubleClickConnection)

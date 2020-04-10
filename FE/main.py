@@ -7,8 +7,10 @@ from RemapMode import RemapMode
 from Shorthands import Shorthands
 from TestTextBox import TestTextBox
 from AIHelper import AIHelper, TextStyle
+import utils as U
 
 import json
+import copy
 
 
 defaultKeyboardLayout = [
@@ -39,6 +41,7 @@ class Ui_MainWindow(object):
         # ====== INIT CONFIGS ======
         self.remaps = [{}]
         self.layouts = [{
+            'name': 'Layout 1',
             'mode': {
                 'type': 'long_press',
                 'value': 1
@@ -67,8 +70,16 @@ class Ui_MainWindow(object):
         )
         self.layoutsSwitcher.setAlignment(QtCore.Qt.AlignLeft)
         self.layoutsSwitcher.setSpacing(25)
-        self.layoutButtons = [LayoutButton(self, LayoutButtonStyle.ACTIVE_LAYOUT, lambda : self.switchLayout(0), "EVERYDAY LAYOUT")]
-        self.layoutAdder = LayoutButton(self, LayoutButtonStyle.ADD_LAYOUT, self.addLayout, "+")
+        self.layoutButtons = [LayoutButton(self,
+                                            LayoutButtonStyle.ACTIVE_LAYOUT,
+                                            lambda : self.switchLayout(0),
+                                            lambda : self.changeLayoutName(0),
+                                            "LAYOUT 1")]
+        self.layoutAdder = LayoutButton(self,
+                                        LayoutButtonStyle.ADD_LAYOUT,
+                                        self.addLayout,
+                                        None,
+                                        "+")
 
         [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
         self.layoutAdderWidget.addWidget(self.layoutAdder)
@@ -257,6 +268,7 @@ class Ui_MainWindow(object):
         resultFile = {'layouts': []}
         for n, remap in enumerate(self.remaps):
             resultFile['layouts'].append({
+                'name': self.layouts[n]['name'],
                 'keymap': remap,
                 'mode': self.layouts[n]['mode'],
                 'key_strings': self.layouts[n]['key_strings'],
@@ -271,7 +283,8 @@ class Ui_MainWindow(object):
         #                                                         "JSON (*.json)",
         #                                                         options=options
         #                                                     )
-        fileName = '../BE/advanced_layout/helpers/config.json'
+        # fileName = '../BE/advanced_layout/helpers/config.json'
+        fileName = '../FE/config.json'
         if fileName != '':
             with open(fileName, 'w') as jf:
                 json.dump(resultFile, jf)
@@ -306,12 +319,11 @@ class Ui_MainWindow(object):
             self.layoutsSwitcher.removeWidget(layoutButton)
 
         layoutIndex = len(self.layoutButtons)
-        layoutNames = ["EMAIL LAYOUT", "CODING LAYOUT"]
         self.layoutButtons.append(
             LayoutButton(self, LayoutButtonStyle.DEFAULT_STYLE,
                         lambda : self.switchLayout(layoutIndex),
-                        layoutNames[layoutIndex - 1]
-                        #  f"LAYOUT {layoutIndex + 1}"
+                        lambda : self.changeLayoutName(layoutIndex),
+                         f"LAYOUT {layoutIndex + 1}"
                          )
         )
 
@@ -320,6 +332,7 @@ class Ui_MainWindow(object):
 
         self.remaps.append({})
         self.layouts.append({
+            'name': f"LAYOUT {layoutIndex + 1}",
             'mode': {
                 'type': 'long_press',
                 'value': 1
@@ -332,6 +345,49 @@ class Ui_MainWindow(object):
         })
         if len(self.layoutButtons) == 3:
             self.layoutAdder.setEnabled(False)
+
+    def changeLayoutName(self, layoutIndex):
+        [self.layoutsSwitcher.removeWidget(layoutButton) for layoutButton in self.layoutButtons]
+        buttonBuff = self.layoutButtons.pop(layoutIndex)
+
+        LABEL_FONT = QtGui.QFont("Arial", 10, weight=450)
+        LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
+        changeNameLine = U.initLineEdit(buttonBuff.text(), fixedWidth=250)
+        changeNameLine.selectAll()
+        changeNameLine.setStyleSheet("""
+            border: none;
+            background-color: #1D2939;
+            border-radius: 4px;
+            padding: 6px 10px 6px 10px;
+            margin-bottom: 7px;
+            color: white;
+        """)
+        changeNameLine.setAlignment(QtCore.Qt.AlignCenter)
+        changeNameLine.setFont(LABEL_FONT)
+        changeNameLine.editingFinished.connect(
+                lambda : self.applyNameChanged(buttonBuff, layoutIndex)
+            )
+        changeNameLine.textEdited.connect(lambda: self.toUpper(changeNameLine))
+        self.layoutButtons.insert(layoutIndex, changeNameLine)
+        [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
+        changeNameLine.setFocus()
+    
+    @staticmethod
+    def toUpper(editLine):
+        text = editLine.text()
+        editLine.setText("")
+        editLine.setText(text.upper())
+
+    def applyNameChanged(self, buttonBuff, layoutIndex):
+        print('changing name')
+        for i in reversed(range(self.layoutsSwitcher.count())): 
+            self.layoutsSwitcher.itemAt(i).widget().setParent(None)
+        editLine = self.layoutButtons.pop(layoutIndex)
+
+        self.layouts[layoutIndex]['name'] = editLine.text()
+        buttonBuff.setText(editLine.text())
+        self.layoutButtons.insert(layoutIndex, buttonBuff)
+        [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
 
     def switchLayout(self, layoutIndex):
         print(self.remaps, layoutIndex)
