@@ -1,4 +1,6 @@
 from PyQt5 import QtWidgets, QtGui
+
+from DataManager import DataManager
 import utils as U
 
 
@@ -53,6 +55,7 @@ class RemapMode():
         self.value = U.initLineEdit(validator=QtGui.QIntValidator, fixedWidth=150)
         self._setStyles()
         self.widgets = [self.label, self.multPress, self.longPress, self.value]
+        self.dataManager = DataManager()
 
     def _setStyles(self):
         self.label.setStyleSheet(REMAP_MODE_LABEL_STYLE)
@@ -64,15 +67,15 @@ class RemapMode():
         self.longPress.setFont(RADIO_BUTTON_FONT)
         self.multPress.setFont(RADIO_BUTTON_FONT)
 
-    def saveRadioState(self, layouts, layoutIndex):
-        layouts[layoutIndex]['mode']['type'] = 'long_press' \
-                                                if self.longPress.isChecked() \
-                                                else 'multiple_press'
+    def saveRadioState(self):
+        self.dataManager.setModeType('long_press' \
+                                    if self.longPress.isChecked() \
+                                    else 'multiple_press')
 
-    def saveValue(self, layouts, layoutIndex):
-        layouts[layoutIndex]['mode']['value'] = int(self.value.text())
+    def saveValue(self):
+        self.dataManager.setModeValue(int(self.value.text()))
 
-    def loadModeState(self, layouts, layoutIndex):
-        self.value.setText(str(layouts[layoutIndex]['mode']['value']))
-        self.longPress.setChecked(layouts[layoutIndex]['mode']['type'] == 'long_press')
-        self.multPress.setChecked(layouts[layoutIndex]['mode']['type'] == 'multiple_press')
+    def loadModeState(self):
+        self.value.setText(str(self.dataManager.getModeValue()))
+        self.longPress.setChecked(self.dataManager.getModeType() == 'long_press')
+        self.multPress.setChecked(self.dataManager.getModeType() == 'multiple_press')

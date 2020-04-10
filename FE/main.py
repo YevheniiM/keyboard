@@ -7,6 +7,8 @@ from RemapMode import RemapMode
 from Shorthands import Shorthands
 from TestTextBox import TestTextBox
 from AIHelper import AIHelper, TextStyle
+from DataManager import DataManager
+from LayoutManager import LayoutManager
 import utils as U
 
 import json
@@ -24,9 +26,6 @@ defaultKeyboardLayout = [
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("KeyAccess")
-        MainWindow.setWindowTitle("KeyAccess")
-        MainWindow.setWindowIconText("KeyAccess")
         MainWindow.setWindowIcon(QtGui.QIcon("resources/letter.svg"))
         self.width = 1050
         self.height = 850
@@ -38,52 +37,15 @@ class Ui_MainWindow(object):
         self.centralWidget.setObjectName("centralWidget")
         self.boxLayoutFactory = BoxLayoutFactory(self.centralWidget)
 
-        # ====== INIT CONFIGS ======
-        self.remaps = [{}]
-        self.layouts = [{
-            'name': 'Layout 1',
-            'mode': {
-                'type': 'long_press',
-                'value': 1
-                },
-            'key_strings' : {},
-            'ai': {
-                'correction': False,
-                'completion': False
-            }
-        }]
-        self.currentLayout = 0
-        # ====== INIT CONFIGS ======
+        ############################################################
+        ### stores and amanges all info about layouts and remaps ###
+        ############################################################
+        self.dataManager = DataManager()
 
-        # ====== LAYOUT SWITCHER ======
-        self.layoutsSwitcher = self.boxLayoutFactory.getLayout(
-            QtWidgets.QHBoxLayout,
-            (12, 0, self.width - 50, 80),
-            (20, 20, 0, 0),
-            "layoutsSwithcer"
-        )
-        self.layoutAdderWidget = self.boxLayoutFactory.getLayout(
-            QtWidgets.QHBoxLayout,
-            (self.width - 91, 10, 70, 80),
-            (0, 0, 0, 0),
-            "layoutAdder"
-        )
-        self.layoutsSwitcher.setAlignment(QtCore.Qt.AlignLeft)
-        self.layoutsSwitcher.setSpacing(25)
-        self.layoutButtons = [LayoutButton(self,
-                                            LayoutButtonStyle.ACTIVE_LAYOUT,
-                                            lambda : self.switchLayout(0),
-                                            lambda : self.changeLayoutName(0),
-                                            "LAYOUT 1")]
-        self.layoutAdder = LayoutButton(self,
-                                        LayoutButtonStyle.ADD_LAYOUT,
-                                        self.addLayout,
-                                        None,
-                                        "+")
-
-        [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
-        self.layoutAdderWidget.addWidget(self.layoutAdder)
-        # ====== LAYOUT SWITCHER ======
+        #################################################
+        ### manages layout buttons and related events ###
+        #################################################
+        self.layoutManager = LayoutManager(self, self.boxLayoutFactory)
 
         self.rows = [self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
@@ -93,15 +55,18 @@ class Ui_MainWindow(object):
         ) for i in range(5)]
 
         MainWindow.setCentralWidget(self.centralWidget)
+
+        #########################################
+        ### program doesn't work without this ###
+        #########################################
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, self.width - 60, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-        # self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        # self.statusbar.setObjectName("statusbar")
-        # MainWindow.setStatusBar(self.statusbar)
 
-        # ====== MODE configuration widget =====
+        ###################################
+        ### configures mode of pressing ###
+        ###################################
         self.modeWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
             (20, 110, 200, 140),
@@ -111,18 +76,19 @@ class Ui_MainWindow(object):
 
         self.mode = RemapMode()
         self.mode.longPress.toggled.connect(
-            lambda : self.mode.saveRadioState(self.layouts, self.currentLayout)
+            lambda : self.mode.saveRadioState()
         )
         self.mode.multPress.toggled.connect(
-            lambda : self.mode.saveRadioState(self.layouts, self.currentLayout)
+            lambda : self.mode.saveRadioState()
         )
         self.mode.value.editingFinished.connect(
-            lambda : self.mode.saveValue(self.layouts, self.currentLayout)
+            lambda : self.mode.saveValue()
         )
         [self.modeWidget.addWidget(m) for m in self.mode.widgets]
-        # ====== MODE configuration widget ======
 
-        # ====== AI HELPER =====
+        ###########################
+        ### configures ai tools ###
+        ###########################
         self.aiWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QVBoxLayout,
             (220, 108, 200, 105),
@@ -132,10 +98,10 @@ class Ui_MainWindow(object):
 
         self.aiHelper = AIHelper()
         self.aiHelper.correction.toggled.connect(
-            lambda : self.aiHelper.saveAIState(self.layouts, self.currentLayout)
+            lambda : self.aiHelper.saveAIState()
         )
         self.aiHelper.completion.toggled.connect(
-            lambda : self.aiHelper.saveAIState(self.layouts, self.currentLayout)
+            lambda : self.aiHelper.saveAIState()
         )
         [self.aiWidget.addWidget(m) for m in self.aiHelper.widgets]
         # ====== AI HELPER ======
@@ -149,6 +115,7 @@ class Ui_MainWindow(object):
         )
 
         self.textStyle = TextStyle()
+        # TODO: save text typing style
         # self.aiHelper.on.toggled.connect(
         #     lambda : self.aiHelper.saveRadioState(self.layouts, self.currentLayout)
         # )
@@ -159,19 +126,13 @@ class Ui_MainWindow(object):
         # ====== TEXT STYLE ======
 
         # ====== SHORTHANDS configuration =====
+        # TODO: split into separate
         self.shorthandsManagerWidget = self.boxLayoutFactory.getLayout(
             QtWidgets.QGridLayout,
             (390, 113, 480, 100),
             (10, 10, 0, -1),
             "shorthandsManagerWidget"
         )
-        # self.shorthandsListWidget = self.boxLayoutFactory.getLayout(
-        #     QtWidgets.QGridLayout,
-        #     (370, 180, 450, 200),
-        #     (0, 0, 0, 0),
-        #     "shorthandsListWidget"
-        # )
-
         self.wrapper = QtWidgets.QWidget()
         self.wrapper.setGeometry(QtCore.QRect(390, 220, 450, 120))
         self.wrapper.setObjectName("wrapper")
@@ -202,6 +163,7 @@ class Ui_MainWindow(object):
         # ====== TEST TEXT box =====
 
         # ===== SAVE button =====
+        # TODO: split into separete files
         self.controlButtons = self.boxLayoutFactory.getLayout(
             QtWidgets.QHBoxLayout,
             (self.width - 164, self.height - 75, 125, 35),
@@ -228,11 +190,11 @@ class Ui_MainWindow(object):
         self.controlButton.setFont(BUTTON_FONT)
         self.controlButton.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.controlButton.setCursor(QtCore.Qt.PointingHandCursor)
-        self.controlButton.clicked.connect(self.saveRemaps)
+        self.controlButton.clicked.connect(self.dataManager.dump)
         self.controlButtons.addWidget(self.controlButton)
         # ===== SAVE button =====
 
-        self.initLayout(self.currentLayout)
+        self.initLayout(self.dataManager.currentLayout)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -262,45 +224,6 @@ class Ui_MainWindow(object):
             for n, widget in enumerate(shorthand[1]):
                 self.wrapper.layout().addWidget(widget, shorthand[0], n)
 
-    def saveRemaps(self):
-        self.shorthands.saveShorthandState(self.layouts, self.currentLayout)
-
-        resultFile = {'layouts': []}
-        for n, remap in enumerate(self.remaps):
-            resultFile['layouts'].append({
-                'name': self.layouts[n]['name'],
-                'keymap': remap,
-                'mode': self.layouts[n]['mode'],
-                'key_strings': self.layouts[n]['key_strings'],
-                'ai': self.layouts[n]['ai']
-            })
-        # UNCOMMENT FOR DEPLOY
-        # options = QtWidgets.QFileDialog.Options()
-        # fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
-        #                                                         QtWidgets.QWidget(),
-        #                                                         "Save configuration file",
-        #                                                         "config.json",
-        #                                                         "JSON (*.json)",
-        #                                                         options=options
-        #                                                     )
-        # fileName = '../BE/advanced_layout/helpers/config.json'
-        fileName = '../FE/config.json'
-        if fileName != '':
-            with open(fileName, 'w') as jf:
-                json.dump(resultFile, jf)
-        self.notify()
-
-    def notify(self):
-        msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Information)
-
-        msg.setText("The configuration file has been saved")
-        # msg.setInformativeText("This is additional information")
-        msg.setWindowTitle("Configuration file saved")
-        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            
-        retval = msg.exec_()
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -312,95 +235,19 @@ class Ui_MainWindow(object):
 
         for n, keyboardRow in enumerate(defaultKeyboardLayout):
             for button in keyboardRow:
-                self.rows[n].addWidget(DragButton(layoutIndex, self.remaps, button))
+                self.rows[n].addWidget(DragButton(layoutIndex, self.dataManager.remaps, button))
 
-    def addLayout(self):
-        for layoutButton in self.layoutButtons:
-            self.layoutsSwitcher.removeWidget(layoutButton)
+    def switchLayout(self, newLayoutIndex):
+        print(self.dataManager.remaps, newLayoutIndex)
+        self.layoutManager.updateButtonsStyle(newLayoutIndex)
+        self.shorthands.saveShorthandState()
+        print(self.dataManager.layouts)
+        self.dataManager.setCurrentLayoutIndex(newLayoutIndex)
 
-        layoutIndex = len(self.layoutButtons)
-        self.layoutButtons.append(
-            LayoutButton(self, LayoutButtonStyle.DEFAULT_STYLE,
-                        lambda : self.switchLayout(layoutIndex),
-                        lambda : self.changeLayoutName(layoutIndex),
-                         f"LAYOUT {layoutIndex + 1}"
-                         )
-        )
-
-        for layoutButton in self.layoutButtons:
-            self.layoutsSwitcher.addWidget(layoutButton)
-
-        self.remaps.append({})
-        self.layouts.append({
-            'name': f"LAYOUT {layoutIndex + 1}",
-            'mode': {
-                'type': 'long_press',
-                'value': 1
-                },
-            'key_strings': {},
-            'ai': {
-                'correction': False,
-                'completion': False
-            }
-        })
-        if len(self.layoutButtons) == 3:
-            self.layoutAdder.setEnabled(False)
-
-    def changeLayoutName(self, layoutIndex):
-        [self.layoutsSwitcher.removeWidget(layoutButton) for layoutButton in self.layoutButtons]
-        buttonBuff = self.layoutButtons.pop(layoutIndex)
-
-        LABEL_FONT = QtGui.QFont("Arial", 10, weight=450)
-        LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
-        changeNameLine = U.initLineEdit(buttonBuff.text(), fixedWidth=250)
-        changeNameLine.selectAll()
-        changeNameLine.setStyleSheet("""
-            border: none;
-            background-color: #1D2939;
-            border-radius: 4px;
-            padding: 6px 10px 6px 10px;
-            margin-bottom: 7px;
-            color: white;
-        """)
-        changeNameLine.setAlignment(QtCore.Qt.AlignCenter)
-        changeNameLine.setFont(LABEL_FONT)
-        changeNameLine.editingFinished.connect(
-                lambda : self.applyNameChanged(buttonBuff, layoutIndex)
-            )
-        changeNameLine.textEdited.connect(lambda: self.toUpper(changeNameLine))
-        self.layoutButtons.insert(layoutIndex, changeNameLine)
-        [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
-        changeNameLine.setFocus()
-    
-    @staticmethod
-    def toUpper(editLine):
-        text = editLine.text()
-        editLine.setText("")
-        editLine.setText(text.upper())
-
-    def applyNameChanged(self, buttonBuff, layoutIndex):
-        print('changing name')
-        for i in reversed(range(self.layoutsSwitcher.count())): 
-            self.layoutsSwitcher.itemAt(i).widget().setParent(None)
-        editLine = self.layoutButtons.pop(layoutIndex)
-
-        self.layouts[layoutIndex]['name'] = editLine.text()
-        buttonBuff.setText(editLine.text())
-        self.layoutButtons.insert(layoutIndex, buttonBuff)
-        [self.layoutsSwitcher.addWidget(layoutButton) for layoutButton in self.layoutButtons]
-
-    def switchLayout(self, layoutIndex):
-        print(self.remaps, layoutIndex)
-        self.layoutButtons[self.currentLayout].setStyleSheet(LayoutButtonStyle.DEFAULT_STYLE)
-        self.layoutButtons[layoutIndex].setStyleSheet(LayoutButtonStyle.ACTIVE_LAYOUT)
-        self.shorthands.saveShorthandState(self.layouts, self.currentLayout)
-        print(self.layouts)
-        self.currentLayout = layoutIndex
-
-        self.mode.loadModeState(self.layouts, layoutIndex)
-        self.aiHelper.loadAIState(self.layouts, layoutIndex)
-        self.shorthands.loadShorthandState(self.layouts, layoutIndex)
-        self.initLayout(layoutIndex)
+        self.mode.loadModeState()
+        self.aiHelper.loadAIState()
+        self.shorthands.loadShorthandState()
+        self.initLayout(newLayoutIndex)
 
 
 if __name__ == "__main__":

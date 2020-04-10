@@ -1,4 +1,6 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
+
+from DataManager import DataManager
 import utils as U
 
 
@@ -87,19 +89,21 @@ class Shorthands():
 
         self.shorthands = []
         self.renderer = renderer
+        self.dataManager = DataManager()
 
     def getShorthandsList(self):
         for n, shorthand in enumerate(self.shorthands):
             yield n, shorthand.widgets
 
-    def saveShorthandState(self, layouts, layoutIndex):
+    def saveShorthandState(self):
         for shorthand in self.shorthands:
             if shorthand.key.text() and shorthand.value.text():
-                layouts[layoutIndex]['key_strings'][shorthand.key.text()] = shorthand.value.text()
+                self.dataManager.addShorthand(shorthand.key.text(),
+                                                shorthand.value.text())
 
-    def loadShorthandState(self, layouts, layoutIndex):
+    def loadShorthandState(self):
         self.shorthands = []
-        for key, value in layouts[layoutIndex]['key_strings'].items():
+        for key, value in self.dataManager.getShorthands().items():
             self.shorthands.append(_Shorthand(key, value))
         if len(self.shorthands) == 0:
             self.shorthands = [_Shorthand()]
