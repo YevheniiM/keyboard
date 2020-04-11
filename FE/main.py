@@ -9,6 +9,7 @@ from TestTextBox import TestTextBox
 from AIHelper import AIHelper, TextStyle
 from DataManager import DataManager
 from LayoutManager import LayoutManager
+from ShorthandManager import ShorthandManager
 import utils as U
 
 import json
@@ -126,30 +127,7 @@ class Ui_MainWindow(object):
         # ====== TEXT STYLE ======
 
         # ====== SHORTHANDS configuration =====
-        # TODO: split into separate
-        self.shorthandsManagerWidget = self.boxLayoutFactory.getLayout(
-            QtWidgets.QGridLayout,
-            (390, 113, 480, 100),
-            (10, 10, 0, -1),
-            "shorthandsManagerWidget"
-        )
-        self.wrapper = QtWidgets.QWidget()
-        self.wrapper.setGeometry(QtCore.QRect(390, 220, 450, 120))
-        self.wrapper.setObjectName("wrapper")
-        self.scroll = QtWidgets.QScrollArea(self.centralWidget)
-        self.scroll.setGeometry(QtCore.QRect(390, 220, 450, 130))
-        self.scroll.setWidget(self.wrapper)
-        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.scroll.setStyleSheet("""
-            QScrollArea {
-                border: none;
-            }
-        """)
-        self.wrapper.setLayout(QtWidgets.QGridLayout())
-
-        self.shorthands = Shorthands(self.renderShorthandsList)
-        self.renderShorthandsManager()
-        self.renderShorthandsList()
+        self.shorthandsManager = ShorthandManager(self, self.boxLayoutFactory)
         # ====== SHORTHANDS configuration =====
 
         # ====== TEST TEXT box =====
@@ -199,31 +177,6 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def renderShorthandsManager(self):
-        for i in reversed(range(self.shorthandsManagerWidget.count())): 
-            self.shorthandsManagerWidget.itemAt(i).widget().setParent(None)
-
-        self.shorthandsManagerWidget.addWidget(self.shorthands.mainLabel, 0, 0)
-        self.shorthandsManagerWidget.addWidget(self.shorthands.shorthandTip, 1, 0)
-        self.shorthandsManagerWidget.addWidget(self.shorthands.fullTextTip, 1, 1)
-        self.shorthandsManagerWidget.addWidget(self.shorthands.shorthandInput, 2, 0)
-        self.shorthandsManagerWidget.addWidget(self.shorthands.fullTextInput, 2, 1)
-        self.shorthandsManagerWidget.addWidget(self.shorthands.shorthandAdder, 2, 2)
-
-    def renderShorthandsList(self):
-        for i in reversed(range(self.wrapper.layout().count())): 
-            self.wrapper.layout().itemAt(i).widget().setParent(None)
-
-        shorthands = list(self.shorthands.getShorthandsList())
-        if len(shorthands) == 1:
-            self.wrapper.setGeometry(QtCore.QRect(390, 220, 450, 30))
-        else:
-            self.wrapper.setGeometry(QtCore.QRect(390, 220, 450,
-                                    20 * len(shorthands)))
-        for shorthand in shorthands:
-            for n, widget in enumerate(shorthand[1]):
-                self.wrapper.layout().addWidget(widget, shorthand[0], n)
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -240,13 +193,13 @@ class Ui_MainWindow(object):
     def switchLayout(self, newLayoutIndex):
         print(self.dataManager.remaps, newLayoutIndex)
         self.layoutManager.updateButtonsStyle(newLayoutIndex)
-        self.shorthands.saveShorthandState()
+        self.shorthandsManager.saveShorthandState()
         print(self.dataManager.layouts)
         self.dataManager.setCurrentLayoutIndex(newLayoutIndex)
 
         self.mode.loadModeState()
         self.aiHelper.loadAIState()
-        self.shorthands.loadShorthandState()
+        self.shorthandsManager.loadShorthandState()
         self.initLayout(newLayoutIndex)
 
 
