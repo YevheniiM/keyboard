@@ -101,6 +101,9 @@ class DataManager:
         def addShorthand(self, shorthandKey, shorthandValue):
             self.layouts[self.currentLayout]['key_strings'][shorthandKey] = shorthandValue
 
+        def removeShorthand(self, shorthandKey):
+            del self.layouts[self.currentLayout]['key_strings'][shorthandKey]
+
         def getShorthands(self):
             return self.layouts[self.currentLayout]['key_strings']
 

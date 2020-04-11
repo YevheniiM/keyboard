@@ -49,6 +49,17 @@ class ShorthandStyle:
         }
     """
 
+    REMOVE_BUTTON_STYLE = """
+        QPushButton {
+            opacity: 0;
+            color: #6D7278;
+            border-radius: 10px;
+        }
+        QPushButton:hover {
+            background-color: #2E3A45;
+        }
+    """
+
 
 LABEL_FONT = QtGui.QFont("Arial", 9, weight=400)
 LABEL_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
@@ -63,17 +74,24 @@ BUTTON_FONT = QtGui.QFont("Arial", 10, weight=450)
 BUTTON_FONT.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, .75)
 
 class _Shorthand():
-    def __init__(self, key='', value=''):
-        self.key = U.initLabel(key, (110, 15))
-        self.value = U.initLabel(value, (270, 15))
+    def __init__(self, onRemove, key='', value='', index=0):
+        self.index = index
+        self.key = U.initLabel(key, (120, 15))
+        self.value = U.initLabel(value, (240, 15))
+        self.remove = QtWidgets.QPushButton()
+        self.remove.clicked.connect(lambda : onRemove(self.index))
         self._setStyles()
-        self.widgets = [self.key, self.value]
+        self.widgets = [self.key, self.value, self.remove]
 
     def _setStyles(self):
         self.key.setStyleSheet(ShorthandStyle.TIP_LABEL)
         self.key.setFont(INPUT_LINE_FONT)
         self.value.setStyleSheet(ShorthandStyle.TIP_LABEL)
         self.value.setFont(INPUT_LINE_FONT)
+        self.remove.setStyleSheet(ShorthandStyle.REMOVE_BUTTON_STYLE)
+        self.remove.setFixedSize(20, 20)
+        self.remove.setCursor(QtCore.Qt.PointingHandCursor)
+        self.remove.setIcon(QtGui.QIcon("resources/remove.svg"))
 
 
 class Shorthands():
@@ -97,16 +115,14 @@ class Shorthands():
 
     def saveShorthandState(self):
         for shorthand in self.shorthands:
-            if shorthand.key.text() and shorthand.value.text():
-                self.dataManager.addShorthand(shorthand.key.text(),
-                                                shorthand.value.text())
+            self.dataManager.addShorthand(shorthand.key.text(),
+                                            shorthand.value.text())
 
     def loadShorthandState(self):
         self.shorthands = []
-        for key, value in self.dataManager.getShorthands().items():
-            self.shorthands.append(_Shorthand(key, value))
-        if len(self.shorthands) == 0:
-            self.shorthands = [_Shorthand()]
+        for i, (key, value) in enumerate(self.dataManager.getShorthands().items()):
+            self.shorthands.append(_Shorthand(
+                self._removeShorthand, key, value, i))
         self.renderer()
 
     def _setStyles(self):
@@ -133,8 +149,21 @@ class Shorthands():
     def _addShorthand(self):
         if not (self.shorthandInput.text() and self.fullTextInput.text()):
             return
-        self.shorthands.insert(0, _Shorthand(self.shorthandInput.text(),
+        self.shorthands.insert(0, _Shorthand(self._removeShorthand,
+                                            self.shorthandInput.text(),
                                             self.fullTextInput.text()))
+        for i in range(1, len(self.shorthands)):
+            self.shorthands[i].index = i
         self.shorthandInput.setText('')
         self.fullTextInput.setText('')
+
+        self.saveShorthandState()
+        self.renderer()
+
+    def _removeShorthand(self, index):
+        self.dataManager.removeShorthand(self.shorthands.pop(index).key.text())
+
+        for i in range(index, len(self.shorthands)):
+            self.shorthands[i].index = i
+
         self.renderer()

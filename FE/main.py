@@ -126,9 +126,10 @@ class Ui_MainWindow(object):
         [self.textStyleWidget.addWidget(m) for m in self.textStyle.widgets]
         # ====== TEXT STYLE ======
 
-        # ====== SHORTHANDS configuration =====
+        #####################################
+        ### Completely maanges shorthands ###
+        #####################################
         self.shorthandsManager = ShorthandManager(self, self.boxLayoutFactory)
-        # ====== SHORTHANDS configuration =====
 
         # ====== TEST TEXT box =====
         self.textBoxWidget = self.boxLayoutFactory.getLayout(

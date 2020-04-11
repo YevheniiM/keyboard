@@ -54,9 +54,9 @@ class ShorthandManager:
 
         shorthands = list(self.shorthands.getShorthandsList())
         if len(shorthands) == 1:
-            self.wrapper.setGeometry(QtCore.QRect(390, 220, 450, 30))
+            self.wrapper.setGeometry(QtCore.QRect(390, 220, 430, 30))
         else:
-            self.wrapper.setGeometry(QtCore.QRect(390, 220, 450,
+            self.wrapper.setGeometry(QtCore.QRect(390, 220, 430,
                                     20 * len(shorthands)))
         for shorthand in shorthands:
             for n, widget in enumerate(shorthand[1]):
