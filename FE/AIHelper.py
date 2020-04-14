@@ -3,7 +3,6 @@ from PyQt5 import QtWidgets, QtGui
 from DataManager import DataManager
 import utils as U
 
-
 REMAP_MODE_LABEL_STYLE = """
     QLabel {
         color: #F7B500;
@@ -68,6 +67,7 @@ class AIHelper():
 
         self._setStyles()
         self.widgets = [self.label, self.correction, self.completion]
+        
         self.dataManager = DataManager()
 
     def _setStyles(self):
@@ -108,4 +108,3 @@ class TextStyle():
         self.informal.setFont(RADIO_BUTTON_FONT)
         self.formal.setStyleSheet(RADIO_BUTTON_STYLE)
         self.formal.setFont(RADIO_BUTTON_FONT)
-
