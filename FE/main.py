@@ -15,7 +15,6 @@ import utils as U
 import json
 import copy
 
-
 defaultKeyboardLayout = [
     '`:1:2:3:4:5:6:7:8:9:0:-:=:backspace'.split(':'),
     'tab:Q:W:E:R:T:Y:U:I:O:P:[:]'.split(':'),
@@ -37,7 +36,7 @@ class Ui_MainWindow(object):
         """)
         self.centralWidget.setObjectName("centralWidget")
         self.boxLayoutFactory = BoxLayoutFactory(self.centralWidget)
-
+    
         ############################################################
         ### stores and amanges all info about layouts and remaps ###
         ############################################################
@@ -183,7 +182,7 @@ class Ui_MainWindow(object):
 
     def initLayout(self, layoutIndex):
         for n in range(len(self.rows)):
-            for i in reversed(range(self.rows[n].count())): 
+            for i in reversed(range(self.rows[n].count())):
                 self.rows[n].itemAt(i).widget().setParent(None)
 
         for n, keyboardRow in enumerate(defaultKeyboardLayout):
@@ -205,6 +204,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     app.setApplicationName("KeyAccess")
