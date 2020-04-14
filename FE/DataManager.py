@@ -43,9 +43,10 @@ class DataManager:
         def dump(self):
             resultFile = {'layouts': []}
             for n, remap in enumerate(self.remaps):
+                remap_lower = {k.lower(): [l.lower() for l in remap[k]] for k in remap}
                 resultFile['layouts'].append({
                     'name': self.layouts[n]['name'],
-                    'keymap': remap,
+                    'keymap': remap_lower,
                     'mode': self.layouts[n]['mode'],
                     'key_strings': self.layouts[n]['key_strings'],
                     'ai': self.layouts[n]['ai']

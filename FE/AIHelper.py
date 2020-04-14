@@ -108,4 +108,3 @@ class TextStyle():
         self.informal.setFont(RADIO_BUTTON_FONT)
         self.formal.setStyleSheet(RADIO_BUTTON_STYLE)
         self.formal.setFont(RADIO_BUTTON_FONT)
-
