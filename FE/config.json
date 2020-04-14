@@ -1,0 +1,36 @@
+{
+  "layouts": [
+    {
+      "keymap": {
+        "X": [
+          "X",
+          "W",
+          "W/X/W"
+        ],
+        "W": [
+          "W",
+          "X/W",
+          "X/W/W/X/W"
+        ]
+      },
+      "mode": {
+        "type": "long_press",
+        "value": 1
+      }
+    },
+    {
+      "keymap": {},
+      "mode": {
+        "type": "long_press",
+        "value": 1
+      }
+    },
+    {
+      "keymap": {},
+      "mode": {
+        "type": "long_press",
+        "value": 1
+      }
+    }
+  ]
+}
