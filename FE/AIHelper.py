@@ -1,4 +1,6 @@
 from PyQt5 import QtWidgets, QtGui
+
+from DataManager import DataManager
 import utils as U
 
 REMAP_MODE_LABEL_STYLE = """
@@ -65,6 +67,8 @@ class AIHelper():
 
         self._setStyles()
         self.widgets = [self.label, self.correction, self.completion]
+        
+        self.dataManager = DataManager()
 
     def _setStyles(self):
         self.label.setStyleSheet(REMAP_MODE_LABEL_STYLE)
@@ -74,20 +78,19 @@ class AIHelper():
         self.completion.setStyleSheet(RADIO_BUTTON_STYLE)
         self.completion.setFont(RADIO_BUTTON_FONT)
 
-    def saveAIState(self, layouts, layoutIndex):
-        layouts[layoutIndex]['ai'] = {
+    def saveAIState(self):
+        self.dataManager.setAIType({
             'correction': self.correction.isChecked(),
             'completion': self.completion.isChecked()
-        }
+        })
 
     # def saveValue(self, layouts, layoutIndex):
     #     layouts[layoutIndex]['mode']['value'] = int(self.value.text())
 
-    def loadAIState(self, layouts, layoutIndex):
+    def loadAIState(self):
         # self.value.setText(str(layouts[layoutIndex]['mode']['value']))
-        self.correction.setChecked(layouts[layoutIndex]['ai']['correction'])
-        self.completion.setChecked(layouts[layoutIndex]['ai']['completion'])
-
+        self.correction.setChecked(self.dataManager.getAIType()['correction'])
+        self.completion.setChecked(self.dataManager.getAIType()['completion'])
 
 class TextStyle():
     def __init__(self):
