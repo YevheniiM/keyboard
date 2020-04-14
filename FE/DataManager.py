@@ -41,8 +41,6 @@ class DataManager:
             })
         
         def dump(self):
-            # self.shorthands.saveShorthandState(self.layouts, self.currentLayout)
-
             resultFile = {'layouts': []}
             for n, remap in enumerate(self.remaps):
                 resultFile['layouts'].append({
@@ -61,8 +59,8 @@ class DataManager:
             #                                                         "JSON (*.json)",
             #                                                         options=options
             #                                                     )
-            # fileName = '../BE/advanced_layout/helpers/config.json'
-            fileName = '../FE/config.json'
+            fileName = '../BE/advanced_layout/helpers/config.json'
+            # fileName = '../FE/config.json'
             if fileName != '':
                 with open(fileName, 'w') as jf:
                     json.dump(resultFile, jf)

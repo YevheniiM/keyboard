@@ -89,9 +89,10 @@ class _Shorthand():
         self.value.setStyleSheet(ShorthandStyle.TIP_LABEL)
         self.value.setFont(INPUT_LINE_FONT)
         self.remove.setStyleSheet(ShorthandStyle.REMOVE_BUTTON_STYLE)
-        self.remove.setFixedSize(20, 20)
+        self.remove.setFixedSize(21, 21)
         self.remove.setCursor(QtCore.Qt.PointingHandCursor)
-        self.remove.setIcon(QtGui.QIcon("resources/remove.svg"))
+        self.remove.setIcon(QtGui.QIcon("resources/remove_icon.svg"))
+        self.remove.setIconSize(QtCore.QSize(17, 17))
 
 
 class Shorthands():

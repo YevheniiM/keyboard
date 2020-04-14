@@ -1,0 +1,28 @@
+<svg width="9" height="9" xmlns="http://www.w3.org/2000/svg">
+ <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+
+ <title>clear-24px</title>
+ <desc>Created with Sketch.</desc>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g fill-rule="evenodd" fill="none" id="vision">
+   <g stroke="null" id="Typing-Tutor">
+    <g stroke="null" id="Shortcut-Menu">
+     <g stroke="null" id="Entered-shortcuts">
+      <rect stroke="#1D2939" rx="2" height="63.010765" width="201.00082" y="-4.888024" x="-185.07867" stroke-width="0.4" id="Rectangle"/>
+      <g stroke="null" id="Shortcut-email">
+       <g stroke="null" id="clear-24px">
+        <polygon stroke="null" points="7.649787902832031,1.9104030132293701 7.011630058288574,1.2722458839416504 4.481647491455078,3.8022282123565674 1.951664924621582,1.2722458839416504 1.3135089874267578,1.9104030132293701 3.8434906005859375,4.440385103225708 1.3135089874267578,6.970366716384888 1.951664924621582,7.608524560928345 4.481647491455078,5.078541994094849 7.011630058288574,7.608524560928345 7.649787902832031,6.970366716384888 5.119804382324219,4.440385103225708 " fill-rule="nonzero" fill="#6D7278" id="Path"/>
+        <polygon stroke="null" points="-1.5026130676269531,-0.8398466110229492 9.761879920959473,-0.8398466110229492 9.761879920959473,10.424648523330688 -1.5026130676269531,10.424648523330688 " id="Path"/>
+       </g>
+      </g>
+     </g>
+    </g>
+   </g>
+  </g>
+ </g>
+</svg>

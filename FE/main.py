@@ -105,7 +105,6 @@ class Ui_MainWindow(object):
             lambda : self.aiHelper.saveAIState()
         )
         [self.aiWidget.addWidget(m) for m in self.aiHelper.widgets]
-        # ====== AI HELPER ======
 
         # ====== TEXT STYLE =====
         self.textStyleWidget = self.boxLayoutFactory.getLayout(

@@ -122,7 +122,6 @@ class DragButton(QtWidgets.QPushButton):
 
     def mouseMoveEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
-            # adjust offset from clicked point to origin of widget
             self.setCursor(QtCore.Qt.ClosedHandCursor)
             # self.setStyleSheet(DragButtonStyle.DRAG_STYLE)
             currPos = self.mapToGlobal(self.pos())
@@ -145,7 +144,7 @@ class DragButton(QtWidgets.QPushButton):
                         self.remaps[self.layoutIndex][widget.defaultText] = [widget.defaultText]
                     if not self.text() in self.remaps[self.layoutIndex][widget.defaultText]\
                         and len(self.remaps[self.layoutIndex][widget.defaultText]) < 3:
-                        self.remaps[self.layoutIndex][widget.defaultText].append(self.text())
+                        self.remaps[self.layoutIndex][widget.defaultText].append(self.defaultText)
                         widget.setText('/'.join(
                             self.remaps[self.layoutIndex][widget.defaultText]
                         ))
@@ -160,6 +159,5 @@ class DragButton(QtWidgets.QPushButton):
                 event.ignore()
                 return
         self.setCursor(QtCore.Qt.PointingHandCursor)
-        # self.setStyleSheet(DragButtonStyle.DEFAULT_STYLE)
 
         super(DragButton, self).mouseReleaseEvent(event)
